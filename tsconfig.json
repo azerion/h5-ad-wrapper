@@ -1,0 +1,17 @@
+{
+    "compilerOptions": {
+        "module": "amd",
+        "target": "es5",
+        "moduleResolution": "node",
+        "sourceMap": false,
+        "declaration": false,
+        "noUnusedLocals": true,
+        "noUnusedParameters": false,
+        "noImplicitAny":true
+    },
+    "files": [
+        "node_modules/eventemitter3/index.d.ts",
+        "src/definitions.d.ts",
+        "src/index.ts"
+    ]
+}
