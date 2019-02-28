@@ -7,11 +7,8 @@
 
     <title>Phaser Advertisement example</title>
 
-    <!--<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/phaser/2.6.2/phaser.min.js"></script>-->
-
-    <!--<script type="text/javascript" src="//cnd.fbrq.io/phaser-ads/phaser-ads.min.js"></script>-->
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/phaser/2.6.2/phaser.js"></script>
-    <script type="text/javascript" src="../build/h5-ad-wrapper.min.js"></script>
+    <script type="text/javascript" src="../node_modules/@orange-games/phaser/build/phaser.min.js"></script>
+    <script type="text/javascript" src="../dist/ad-wrapper.umd.js"></script>
 
     <style type="text/css">
         body {
@@ -22,9 +19,11 @@
 
     <!-- Game we want to track -->
     <script type="text/javascript">
-        let soundOfMusic;
-        const game = new Phaser.Game(800, 600, Phaser.AUTO, 'game-container', { init, create, preload});
-        const adManager = new H5AdWrapper.AdWrapper();
+        var soundOfMusic;
+        var game = new Phaser.Game(800, 600, Phaser.AUTO, 'game-container', { init: init, create: create, preload: preload});
+        Phaser.Device.whenReady(function () {
+            game.plugins.add(PhaserAds.AdManager);
+        });
 
         function init() {
             game.scale.scaleMode = Phaser.ScaleManager.RESIZE;
@@ -38,10 +37,12 @@
             game.sound.muteOnPause = false;
 
             //Set the ad provider, we use google Ima3 (ima 3 sdk)
-            adManager.setAdProvider(new H5AdWrapper.GameDistributionAds(
+            ogsdk.ads.setAdProvider(new ogsdk.GameDistributionAds(
+                game,
                 '2d77cfd4b1e5487d998465c29de195b3', //Your game id goes here
                 'ABD36C6C-E74B-4BA7-BE87-0AB01F98D30D-s1'//Your user id goes here
             ));
+
         }
 
         function preload() {
@@ -49,80 +50,109 @@
         }
 
         function create(){
+            var text = game.add.text(game.width / 2, game.height / 2, 'If you see this, there is no Ad being displayed', {
+                font: '30px Arial',
+                fill: '#ffffff'
+            });
+            text.anchor.set(0.5);
+            text.visible = false;
+
             //Let's play this sound file so we can mute it later
             game.add.audio('boden');
             game.sound.play('boden', 0.3, true);
 
             //Content paused event is fired when the content (game) should be paused, and the ad will be played
-            adManager.on(H5AdWrapper.AdEvents.CONTENT_PAUSED, function () {
+            ogsdk.ads.on(ogsdk.AdEvents.CONTENT_PAUSED,function () {
                 game.sound.mute = true;
                 console.error('Started playing ad.');
             });
 
             //This is fired when the ad is finished playing and the content (game) should be resumed
-            adManager.on(H5AdWrapper.AdEvents.CONTENT_RESUMED, function () {
+            ogsdk.ads.on(ogsdk.AdEvents.CONTENT_RESUMED, function () {
                 game.sound.mute = false;
+                text.visible = false;
                 console.error('Finished playing ad.');
             });
 
             //This is fired when the ad was clicked by the user
-            adManager.on(H5AdWrapper.AdEvents.AD_CLICKED, function () {
+            ogsdk.ads.on(ogsdk.AdEvents.AD_CLICKED,function () {
                 console.error('Clicked the ad!');
             });
 
+            ogsdk.ads.on(ogsdk.AdEvents.AD_REWARDED, function () {
+                console.error('Received ad reward!.');
+            });
+
             //This gives us details about how far the users is viewing the add
-            adManager.on(H5AdWrapper.AdEvents.AD_PROGRESSION, function (progression) {
+            ogsdk.ads.on(ogsdk.AdEvents.AD_DISABLED,function (progression) {
                 console.error(progression);
             });
 
             //This is fired when the ad was clicked by the user
-            adManager.on(H5AdWrapper.AdEvents.AD_DISABLED, function () {
+            ogsdk.ads.on(ogsdk.AdEvents.AD_DISABLED, function () {
                 console.error('Ads are being blocked.');
             });
+
+            // ogsdk.ads.on(ogsdk.AdEvents.AD_LOADED, function () {
+            //     console.error('Rewarded ad loaded.');
+            // });
 //            game.sound.mute = true;
 
             //called when the button is clicked
-            const showAd = function() {
-                //the actual game content, behind the ad
-                let text = game.add.text(game.width / 2, game.height / 2, 'If you see this, there is no Ad being displayed', {
-                    font: '30px Arial',
-                    fill: '#ffffff'
-                });
-                text.anchor.set(0.5);
+            var showAd = function(adType) {
+                text.visible = true;
 
-                const adsEnabled = adManager.provider.adsEnabled;
+                var adsEnabled = ogsdk.ads.provider.adsEnabled;
                 if (adsEnabled) {
-                    if (game.device.desktop) {
-                        //This is how we request an ad for desktop
-                        adManager.showAd();
-                    } else {
-                        //In mobile we need to activate it by user input
-                        adManager.showAd();
-                    }
+                    ogsdk.ads.showAd(adType);
                 } else {
                     //the actual game content, behind the ad
-                    text = game.add.text(game.width / 2, game.height / 2 + 60, 'Ads are being blocked.', {
+                    var block = game.add.text(game.width / 2, game.height / 2 + 60, 'Ads are being blocked.', {
                         font: '25px Arial',
                         fill: '#cc0000'
                     });
-                    text.anchor.set(0.5);
+                    block.anchor.set(0.5);
                 }
             }
 
             //create button to start ads
-            let graphics = game.make.graphics(0, 0);
+            var graphics = game.make.graphics(0, 0);
             graphics.beginFill(0xff6600)
                     .drawRoundedRect(0, 0, 200, 60, 13)
                     .endFill();
-            let texture = graphics.generateTexture();
-            let button = game.add.button(game.width / 2, game.height *.75, texture, showAd);
+            var texture = graphics.generateTexture();
+            var button = game.add.button(game.width / 2, game.height *.75, texture, function () {
+                showAd(ogsdk.AdType.interstitial);
+            });
             button.anchor.set(0.5, 0.5);
-            let label = game.add.text(0, 0, 'See ad', {
+            var label = game.add.text(0, 0, 'See ad', {
                 'font': 'bold 30px Arial',
                 'fill': '#000'
             });
             label.anchor.set(0.5);
             button.addChild(label);
+
+            // var button = game.add.button(game.width / 2, game.height *.5, texture, function () {
+            //     showAd(ogsdk.AdType.rewarded);
+            // });
+            // button.anchor.set(0.5, 0.5);
+            // var label = game.add.text(0, 0, 'See rewarded', {
+            //     'font': 'bold 30px Arial',
+            //     'fill': '#000'
+            // });
+            // label.anchor.set(0.5);
+            // button.addChild(label);
+        //
+        //     var button = game.add.button(game.width / 2, game.height *.25, texture, function () {
+        //         ogsdk.ads.preloadAd(ogsdk.AdType.rewarded);
+        //     });
+        //     button.anchor.set(0.5, 0.5);
+        //     var label = game.add.text(0, 0, 'Preload rewarded', {
+        //         'font': 'bold 30px Arial',
+        //         'fill': '#000'
+        //     });
+        //     label.anchor.set(0.5);
+        //     button.addChild(label);
         }
     </script>
 </head>

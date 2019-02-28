@@ -1,5 +1,7 @@
+
+
 declare module HeyzapAds {
-    export function start(published_id: string): Thenable<any>;
+    export function start(publisherId: string): Promise<any>;
 
 	export module InterstitialAd {
         export var Events: {
@@ -8,7 +10,7 @@ declare module HeyzapAds {
             CLICKED: string;
             HIDE: string;
         };
-        export function show(): Thenable<any>;
+        export function show(): Promise<any>;
         export function addEventListener(target: string, call: () => void): void;
     }
     export module VideoAd {
@@ -18,8 +20,8 @@ declare module HeyzapAds {
             CLICKED: string;
             HIDE: string;
         };
-        export function show(): Thenable<any>;
-        export function fetch(): Thenable<any>;
+        export function show(): Promise<any>;
+        export function fetch(): Promise<any>;
         export function addEventListener(target: string, call: () => void): void;
     }
     export module IncentivizedAd {
@@ -29,8 +31,8 @@ declare module HeyzapAds {
             CLICKED: string;
             HIDE: string;
         };
-        export function show(): Thenable<any>;
-        export function fetch(): Thenable<any>;
+        export function show(): Promise<any>;
+        export function fetch(): Promise<any>;
         export function addEventListener(target: string, call: () => void): void;
     }
     export module BannerAd {
@@ -41,9 +43,9 @@ declare module HeyzapAds {
             SHOW: string;
             CLICKED: string;
         };
-        export function show(position: string): Thenable<any>;
-        export function hide(): Thenable<any>;
-        export function destroy(): Thenable<any>;
+        export function show(position: string): Promise<any>;
+        export function hide(): Promise<any>;
+        export function destroy(): Promise<any>;
         export function addEventListener(target: string, call: () => void): void;
     }
 }

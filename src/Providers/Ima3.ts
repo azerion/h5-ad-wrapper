@@ -1,5 +1,7 @@
-import {IProvider} from './IProvider';
-import {AdEvents, AdWrapper} from '../index';
+/// <reference path='../../vendor/google-ima3-sdk.d.ts'/>
+
+import { IProvider } from './IProvider'
+import { AdEvents, AdWrapper } from '../ad-wrapper'
 
 enum GoogleAdEvent {
     start,
@@ -10,74 +12,89 @@ enum GoogleAdEvent {
 }
 
 export interface ICustomParams {
-    [name: string]: string | number| any[];
+    [name: string]: string | number | any[]
 }
 
 export class Ima3 implements IProvider {
-    private gameContent: any;
+    private gameContent: any
 
-    private adContent: HTMLElement;
+    private adContent!: HTMLElement
 
-    private adDisplay: GoogleAds.ima.AdDisplayContainer;
+    private adDisplay!: GoogleAds.ima.AdDisplayContainer
 
-    private adLoader: GoogleAds.ima.AdsLoader;
+    private adLoader!: GoogleAds.ima.AdsLoader
 
-    private adsManager: GoogleAds.ima.AdsManager = null;
+    private adsManager!: GoogleAds.ima.AdsManager
 
-    private googleEnabled: boolean = false;
+    private googleEnabled: boolean = false
 
-    public adsEnabled: boolean = true;
+    public adsEnabled: boolean = true
 
-    private adTagUrl: string = '';
+    private adTagUrl: string = ''
 
-    private adRequested: boolean = false;
+    private adRequested: boolean = false
 
-    public adManager: AdWrapper = null;
+    public adManager!: AdWrapper
 
-    private resizeListener: () => void = null;
+    private resizeListener!: () => void
 
     constructor(canvas: HTMLCanvasElement, adTagUrl: string) {
-        this.areAdsEnabled();
+        this.areAdsEnabled()
 
         if (typeof google === 'undefined') {
-            return;
+            return
         }
 
-        this.googleEnabled = true;
+        this.googleEnabled = true
 
-        this.gameContent = (typeof canvas.parentElement === 'string') ? document.getElementById(<string>canvas.parentElement) : canvas.parentElement;
+        this.gameContent =
+            typeof canvas.parentElement === 'string'
+                ? document.getElementById(canvas.parentElement as string)
+                : canvas.parentElement
         // this.gameContent.currentTime = 100;
-        this.gameContent.style.position = 'absolute';
-        this.gameContent.style.width = '100%';
+        this.gameContent.style.position = 'absolute'
+        this.gameContent.style.width = '100%'
 
-        this.adContent = this.gameContent.parentNode.appendChild(document.createElement('div'));
-        this.adContent.id = 'phaser-ad-container';
-        this.adContent.style.position = 'absolute';
-        this.adContent.style.zIndex = '9999';
-        this.adContent.style.display = 'none';
-        this.adContent.style.top = '0';
-        this.adContent.style.left = '0';
-        this.adContent.style.width = '100%';
-        this.adContent.style.height = '100%';
-        this.adContent.style.overflow = 'hidden';
+        this.adContent = this.gameContent.parentNode.appendChild(document.createElement('div'))
+        this.adContent.id = 'phaser-ad-container'
+        this.adContent.style.position = 'absolute'
+        this.adContent.style.zIndex = '9999'
+        this.adContent.style.display = 'none'
+        this.adContent.style.top = '0'
+        this.adContent.style.left = '0'
+        this.adContent.style.width = '100%'
+        this.adContent.style.height = '100%'
+        this.adContent.style.overflow = 'hidden'
 
-        this.adTagUrl = adTagUrl;
+        this.adTagUrl = adTagUrl
 
         // Create the ad display container.
-        this.adDisplay = new google.ima.AdDisplayContainer(this.adContent);
+        this.adDisplay = new google.ima.AdDisplayContainer(this.adContent)
 
-        //Set vpaid enabled, and update locale
-        (<any>google.ima.settings).setVpaidMode((<any>google.ima).ImaSdkSettings.VpaidMode.ENABLED);
-        (<any>google.ima.settings).setLocale('nl');
+        // Set vpaid enabled, and update locale
+        ;(google.ima.settings as any).setVpaidMode(
+            (google.ima as any).ImaSdkSettings.VpaidMode.ENABLED
+        )
+        ;(google.ima.settings as any).setLocale('nl')
 
         // Create ads loader, and register events
-        this.adLoader = new google.ima.AdsLoader(this.adDisplay);
-        this.adLoader.addEventListener(google.ima.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED, this.onAdManagerLoader, false, this);
-        this.adLoader.addEventListener(google.ima.AdErrorEvent.Type.AD_ERROR, this.onAdError, false, this);
+        this.adLoader = new google.ima.AdsLoader(this.adDisplay)
+        this.adLoader.addEventListener(
+            google.ima.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED,
+            this.onAdManagerLoader,
+            false,
+            this
+        )
+        this.adLoader.addEventListener(
+            google.ima.AdErrorEvent.Type.AD_ERROR,
+            this.onAdError,
+            false,
+            this
+        )
     }
 
     public setManager(manager: AdWrapper): void {
-        this.adManager = manager;
+        this.adManager = manager
     }
 
     /**
@@ -85,9 +102,9 @@ export class Ima3 implements IProvider {
      * Otherwise we display an ad
      */
     public showAd(customParams?: ICustomParams): void {
-        console.log('Ad Requested');
+        console.log('Ad Requested')
         if (this.adRequested) {
-            return;
+            return
         }
 
         if (!this.adsEnabled) {
@@ -95,60 +112,60 @@ export class Ima3 implements IProvider {
         }
 
         if (!this.googleEnabled) {
-            this.onContentResumeRequested();
-            return;
+            this.onContentResumeRequested()
+            return
         }
 
-        //For mobile this ad request needs to be handled post user click
-        this.adDisplay.initialize();
+        // For mobile this ad request needs to be handled post user click
+        this.adDisplay.initialize()
 
         // Request video ads.
-        let adsRequest: GoogleAds.ima.AdsRequest = new google.ima.AdsRequest();
-        adsRequest.adTagUrl = this.adTagUrl + this.parseCustomParams(customParams);
+        let adsRequest: GoogleAds.ima.AdsRequest = new google.ima.AdsRequest()
+        adsRequest.adTagUrl = this.adTagUrl + this.parseCustomParams(customParams)
 
-        let width: number = window.innerWidth; //parseInt(<string>(!this.game.canvas.style.width ? this.game.canvas.width : this.game.canvas.style.width), 10);
-        let height: number = window.innerHeight; //parseInt(<string>(!this.game.canvas.style.height ? this.game.canvas.height : this.game.canvas.style.height), 10);
+        let width: number = window.innerWidth // parseInt(<string>(!this.game.canvas.style.width ? this.game.canvas.width : this.game.canvas.style.width), 10);
+        let height: number = window.innerHeight // parseInt(<string>(!this.game.canvas.style.height ? this.game.canvas.height : this.game.canvas.style.height), 10);
 
-        //Here we check if phaser is fullscreen or not, if we are fullscreen, we subtract some of the width and height, to counter for the resize (
-        //Fullscreen should be disabled for the ad, (onContentPaused) and requested for again when the game resumes
+        // Here we check if phaser is fullscreen or not, if we are fullscreen, we subtract some of the width and height, to counter for the resize (
+        // Fullscreen should be disabled for the ad, (onContentPaused) and requested for again when the game resumes
         if (document.body.clientHeight < window.innerHeight) {
-            height = document.body.clientHeight;
-            width = document.body.clientWidth;
+            height = document.body.clientHeight
+            width = document.body.clientWidth
         }
 
         // Specify the linear and nonlinear slot sizes. This helps the SDK to
         // select the correct creative if multiple are returned.
-        adsRequest.linearAdSlotWidth = width;
-        adsRequest.linearAdSlotHeight = height;
-        adsRequest.nonLinearAdSlotWidth = width;
-        adsRequest.nonLinearAdSlotHeight = height;
+        adsRequest.linearAdSlotWidth = width
+        adsRequest.linearAdSlotHeight = height
+        adsRequest.nonLinearAdSlotWidth = width
+        adsRequest.nonLinearAdSlotHeight = height
 
-        //Required for games, see:
-        //http://googleadsdeveloper.blogspot.nl/2015/10/important-changes-for-gaming-publishers.html
-        adsRequest.forceNonLinearFullSlot = true;
+        // Required for games, see:
+        // http://googleadsdeveloper.blogspot.nl/2015/10/important-changes-for-gaming-publishers.html
+        adsRequest.forceNonLinearFullSlot = true
 
         try {
-            this.adRequested = true;
-            this.adLoader.requestAds(adsRequest);
+            this.adRequested = true
+            this.adLoader.requestAds(adsRequest)
         } catch (e) {
-            console.log(e);
-            this.onContentResumeRequested();
+            console.log(e)
+            this.onContentResumeRequested()
         }
     }
 
-    //Does nothing, but needed for Provider interface
+    // Does nothing, but needed for Provider interface
     public preloadAd(): void {
-        return;
+        return
     }
 
-    //Does nothing, but needed for Provider interface
+    // Does nothing, but needed for Provider interface
     public destroyAd(): void {
-        return;
+        return
     }
 
-    //Does nothing, but needed for Provider interface
+    // Does nothing, but needed for Provider interface
     public hideAd(): void {
-        return;
+        return
     }
 
     /**
@@ -158,22 +175,40 @@ export class Ima3 implements IProvider {
      * @param adsManagerLoadedEvent
      */
     private onAdManagerLoader(adsManagerLoadedEvent: GoogleAds.ima.AdsManagerLoadedEvent): void {
-        console.log('AdsManager loaded');
+        console.log('AdsManager loaded')
         // Get the ads manager.
-        let adsRenderingSettings: GoogleAds.ima.AdsRenderingSettings = new google.ima.AdsRenderingSettings();
-        adsRenderingSettings.restoreCustomPlaybackStateOnAdBreakComplete = true;
+        let adsRenderingSettings: GoogleAds.ima.AdsRenderingSettings = new google.ima.AdsRenderingSettings()
+        adsRenderingSettings.restoreCustomPlaybackStateOnAdBreakComplete = true
 
         // videoContent should be set to the content video element.
-        let adsManager: GoogleAds.ima.AdsManager = adsManagerLoadedEvent.getAdsManager(this.gameContent, adsRenderingSettings);
-        this.adsManager = adsManager;
-        console.log(adsManager.isCustomClickTrackingUsed());
+        let adsManager: GoogleAds.ima.AdsManager = adsManagerLoadedEvent.getAdsManager(
+            this.gameContent,
+            adsRenderingSettings
+        )
+        this.adsManager = adsManager
+        console.log(adsManager.isCustomClickTrackingUsed())
 
         // Add listeners to the required events.
-        adsManager.addEventListener(google.ima.AdEvent.Type.CONTENT_PAUSE_REQUESTED, this.onContentPauseRequested, false, this);
-        adsManager.addEventListener(google.ima.AdEvent.Type.CONTENT_RESUME_REQUESTED, this.onContentResumeRequested, false, this);
-        adsManager.addEventListener(google.ima.AdErrorEvent.Type.AD_ERROR, this.onAdError, false, this);
+        adsManager.addEventListener(
+            google.ima.AdEvent.Type.CONTENT_PAUSE_REQUESTED,
+            this.onContentPauseRequested,
+            false,
+            this
+        )
+        adsManager.addEventListener(
+            google.ima.AdEvent.Type.CONTENT_RESUME_REQUESTED,
+            this.onContentResumeRequested,
+            false,
+            this
+        )
+        adsManager.addEventListener(
+            google.ima.AdErrorEvent.Type.AD_ERROR,
+            this.onAdError,
+            false,
+            this
+        )
 
-        [
+        ;[
             google.ima.AdEvent.Type.ALL_ADS_COMPLETED,
             google.ima.AdEvent.Type.CLICK,
             google.ima.AdEvent.Type.COMPLETE,
@@ -184,40 +219,40 @@ export class Ima3 implements IProvider {
             google.ima.AdEvent.Type.STARTED,
             google.ima.AdEvent.Type.THIRD_QUARTILE
         ].forEach((event: string) => {
-            adsManager.addEventListener(
-                event,
-                this.onAdEvent,
-                false,
-                this);
-        });
+            adsManager.addEventListener(event, this.onAdEvent, false, this)
+        })
 
         try {
-            //Show the ad elements, we only need to show the faux videoelement on iOS, because the ad is displayed in there.
-            this.adContent.style.display = 'block';
+            // Show the ad elements, we only need to show the faux videoelement on iOS, because the ad is displayed in there.
+            this.adContent.style.display = 'block'
 
             // Initialize the ads manager. Ad rules playlist will start at this time.
-            let width: number = window.innerWidth; //parseInt(<string>(!this.game.canvas.style.width ? this.game.canvas.width : this.game.canvas.style.width), 10);
-            let height: number = window.innerHeight; //parseInt(<string>(!this.game.canvas.style.height ? this.game.canvas.height : this.game.canvas.style.height), 10);
-            this.adsManager.init(width, height, google.ima.ViewMode.NORMAL);
+            let width: number = window.innerWidth // parseInt(<string>(!this.game.canvas.style.width ? this.game.canvas.width : this.game.canvas.style.width), 10);
+            let height: number = window.innerHeight // parseInt(<string>(!this.game.canvas.style.height ? this.game.canvas.height : this.game.canvas.style.height), 10);
+            this.adsManager.init(width, height, google.ima.ViewMode.NORMAL)
 
             // Call play to start showing the ad. Single video and overlay ads will
             // start at this time; the call will be ignored for ad rules.
-            this.adsManager.start();
+            this.adsManager.start()
 
             this.resizeListener = () => {
                 if (this.adsManager === null) {
-                    return;
+                    return
                 }
 
-                //Window was resized, so expect something similar
-                console.log('Resizing ad size');
-                this.adsManager.resize(window.innerWidth, window.innerHeight, google.ima.ViewMode.NORMAL);
-            };
+                // Window was resized, so expect something similar
+                console.log('Resizing ad size')
+                this.adsManager.resize(
+                    window.innerWidth,
+                    window.innerHeight,
+                    google.ima.ViewMode.NORMAL
+                )
+            }
 
-            window.addEventListener('resize', this.resizeListener);
+            window.addEventListener('resize', this.resizeListener)
         } catch (adError) {
-            console.log('Adsmanager error:', adError);
-            this.onAdError(adError);
+            console.log('Adsmanager error:', adError)
+            this.onAdError(adError)
         }
     }
 
@@ -226,110 +261,108 @@ export class Ima3 implements IProvider {
      * @param adEvent
      */
     private onAdEvent(adEvent: any): void {
-        console.log('onAdEvent', adEvent);
+        console.log('onAdEvent', adEvent)
 
         switch (adEvent.type) {
             case google.ima.AdEvent.Type.CLICK:
-                this.adManager.emit(AdEvents.AD_CLICKED);
+                this.adManager.emit(AdEvents.AD_CLICKED)
 
-                break;
+                break
             case google.ima.AdEvent.Type.LOADED:
-                this.adRequested = false;
-                let ad: any = adEvent.getAd();
-                console.log('is ad linear?', ad.isLinear());
+                this.adRequested = false
+                let ad: any = adEvent.getAd()
+                console.log('is ad linear?', ad.isLinear())
                 if (!ad.isLinear()) {
-                    this.onContentResumeRequested();
+                    this.onContentResumeRequested()
                 }
-                break;
+                break
             case google.ima.AdEvent.Type.STARTED:
-                this.adManager.emit(AdEvents.AD_PROGRESSION, GoogleAdEvent.start);
-                break;
+                this.adManager.emit(AdEvents.AD_PROGRESSION, GoogleAdEvent.start)
+                break
             case google.ima.AdEvent.Type.FIRST_QUARTILE:
-                this.adManager.emit(AdEvents.AD_PROGRESSION, GoogleAdEvent.firstQuartile);
+                this.adManager.emit(AdEvents.AD_PROGRESSION, GoogleAdEvent.firstQuartile)
 
-                break;
+                break
             case google.ima.AdEvent.Type.MIDPOINT:
-                this.adManager.emit(AdEvents.AD_PROGRESSION, GoogleAdEvent.midPoint);
+                this.adManager.emit(AdEvents.AD_PROGRESSION, GoogleAdEvent.midPoint)
 
-                break;
+                break
             case google.ima.AdEvent.Type.THIRD_QUARTILE:
-                this.adManager.emit(AdEvents.AD_PROGRESSION, GoogleAdEvent.thirdQuartile);
+                this.adManager.emit(AdEvents.AD_PROGRESSION, GoogleAdEvent.thirdQuartile)
 
-                break;
+                break
             case google.ima.AdEvent.Type.COMPLETE:
-                this.adManager.emit(AdEvents.AD_PROGRESSION, GoogleAdEvent.complete);
+                this.adManager.emit(AdEvents.AD_PROGRESSION, GoogleAdEvent.complete)
 
-                break;
+                break
             case google.ima.AdEvent.Type.ALL_ADS_COMPLETED:
-                this.onContentResumeRequested();
-                break;
+                this.onContentResumeRequested()
+                break
         }
     }
 
     private onAdError(error: any): void {
-        console.log('gneric ad error', error);
+        console.log('gneric ad error', error)
         if (null !== this.adsManager) {
-            this.adsManager.destroy();
-            this.adsManager = null;
+            this.adsManager.destroy()
 
             if (null !== this.resizeListener) {
-                window.removeEventListener('resize', this.resizeListener);
-                this.resizeListener = null;
+                window.removeEventListener('resize', this.resizeListener)
             }
         }
 
         if (this.adRequested) {
-            this.adRequested = false;
+            this.adRequested = false
         }
 
-        //We silently ignore adLoader errors, it just means there is no ad available
-        this.onContentResumeRequested();
+        // We silently ignore adLoader errors, it just means there is no ad available
+        this.onContentResumeRequested()
     }
 
     /**
      * When the ad starts playing, and the game should be paused
      */
     private onContentPauseRequested(): void {
-        console.log('onContentPauseRequested', arguments);
-        this.adManager.emit(AdEvents.CONTENT_PAUSED);
-
+        console.log('onContentPauseRequested', arguments)
+        this.adManager.emit(AdEvents.CONTENT_PAUSED)
     }
 
     /**
      * When the ad is finished and the game should be resumed
      */
     private onContentResumeRequested(): void {
-        console.log('onContentResumeRequested', arguments);
+        console.log('onContentResumeRequested', arguments)
 
         if (typeof google === 'undefined') {
-            this.adManager.unMuteAfterAd();
-            this.adManager.emit(AdEvents.CONTENT_RESUMED);
+            this.adManager.unMuteAfterAd()
+            this.adManager.emit(AdEvents.CONTENT_RESUMED)
 
-            return;
+            return
         }
 
-        this.adContent.style.display = 'none';
-        this.adManager.unMuteAfterAd();
-        this.adManager.emit(AdEvents.CONTENT_RESUMED);
+        this.adContent.style.display = 'none'
+        this.adManager.unMuteAfterAd()
+        this.adManager.emit(AdEvents.CONTENT_RESUMED)
     }
 
-    private parseCustomParams(customParams: ICustomParams): string {
+    private parseCustomParams(customParams: ICustomParams | undefined): string {
         if (undefined !== customParams) {
-            let customDataString: string = '';
+            let customDataString: string = ''
             for (let key in customParams) {
                 if (customParams.hasOwnProperty(key)) {
                     if (customDataString.length > 0) {
-                        customDataString += '' +
-                            '&';
+                        customDataString += '' + '&'
                     }
-                    let param: any = (Array.isArray(customParams[key])) ? (<any[]>customParams[key]).join(',') : customParams[key];
-                    customDataString += key + '=' + param;
+                    let param: any = Array.isArray(customParams[key])
+                        ? (customParams[key] as any[]).join(',')
+                        : customParams[key]
+                    customDataString += key + '=' + param
                 }
             }
-            return '&cust_params=' + encodeURIComponent(customDataString);
+            return '&cust_params=' + encodeURIComponent(customDataString)
         }
 
-        return '';
+        return ''
     }
 
     /**
@@ -337,27 +370,28 @@ export class Ima3 implements IProvider {
      * @returns {boolean}
      */
     private areAdsEnabled(): void {
-        let test: HTMLElement = document.createElement('div');
-        test.innerHTML = '&nbsp;';
-        test.className = 'adsbox';
-        test.style.position = 'absolute';
-        test.style.fontSize = '10px';
-        document.body.appendChild(test);
+        let test: HTMLElement = document.createElement('div')
+        test.innerHTML = '&nbsp;'
+        test.className = 'adsbox'
+        test.style.position = 'absolute'
+        test.style.fontSize = '10px'
+        document.body.appendChild(test)
 
         // let adsEnabled: boolean;
         let isEnabled: () => boolean = () => {
-            let enabled: boolean = true;
+            let enabled: boolean = true
             if (test.offsetHeight === 0) {
-                enabled = false;
+                enabled = false
             }
-            test.parentNode.removeChild(test);
+            if (test.parentNode) {
+                test.parentNode.removeChild(test)
+            }
 
-            return enabled;
-        };
+            return enabled
+        }
 
         window.setTimeout(() => {
-            this.adsEnabled = isEnabled();
-        }, 100);
+            this.adsEnabled = isEnabled()
+        }, 100)
     }
 }
-
