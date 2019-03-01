@@ -21,9 +21,6 @@
     <script type="text/javascript">
         var soundOfMusic;
         var game = new Phaser.Game(800, 600, Phaser.AUTO, 'game-container', { init: init, create: create, preload: preload});
-        Phaser.Device.whenReady(function () {
-            game.plugins.add(PhaserAds.AdManager);
-        });
 
         function init() {
             game.scale.scaleMode = Phaser.ScaleManager.RESIZE;
@@ -37,10 +34,8 @@
             game.sound.muteOnPause = false;
 
             //Set the ad provider, we use google Ima3 (ima 3 sdk)
-            ogsdk.ads.setAdProvider(new ogsdk.GameDistributionAds(
-                game,
-                '2d77cfd4b1e5487d998465c29de195b3', //Your game id goes here
-                'ABD36C6C-E74B-4BA7-BE87-0AB01F98D30D-s1'//Your user id goes here
+            ogsdk.ads.setAdProvider(new ogsdk.GameDistribution(
+                '2d77cfd4b1e5487d998465c29de195b3' //Your game id goes here
             ));
 
         }
@@ -132,27 +127,27 @@
             label.anchor.set(0.5);
             button.addChild(label);
 
-            // var button = game.add.button(game.width / 2, game.height *.5, texture, function () {
-            //     showAd(ogsdk.AdType.rewarded);
-            // });
-            // button.anchor.set(0.5, 0.5);
-            // var label = game.add.text(0, 0, 'See rewarded', {
-            //     'font': 'bold 30px Arial',
-            //     'fill': '#000'
-            // });
-            // label.anchor.set(0.5);
-            // button.addChild(label);
-        //
-        //     var button = game.add.button(game.width / 2, game.height *.25, texture, function () {
-        //         ogsdk.ads.preloadAd(ogsdk.AdType.rewarded);
-        //     });
-        //     button.anchor.set(0.5, 0.5);
-        //     var label = game.add.text(0, 0, 'Preload rewarded', {
-        //         'font': 'bold 30px Arial',
-        //         'fill': '#000'
-        //     });
-        //     label.anchor.set(0.5);
-        //     button.addChild(label);
+            var button = game.add.button(game.width / 2, game.height *.5, texture, function () {
+                showAd(ogsdk.AdType.rewarded);
+            });
+            button.anchor.set(0.5, 0.5);
+            var label = game.add.text(0, 0, 'See rewarded', {
+                'font': 'bold 30px Arial',
+                'fill': '#000'
+            });
+            label.anchor.set(0.5);
+            button.addChild(label);
+
+            var button = game.add.button(game.width / 2, game.height *.25, texture, function () {
+                ogsdk.ads.preloadAd(ogsdk.AdType.rewarded);
+            });
+            button.anchor.set(0.5, 0.5);
+            var label = game.add.text(0, 0, 'Preload rewarded', {
+                'font': 'bold 30px Arial',
+                'fill': '#000'
+            });
+            label.anchor.set(0.5);
+            button.addChild(label);
         }
     </script>
 </head>

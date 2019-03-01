@@ -1,14 +1,7 @@
 /// <reference path='../../vendor/cordova-heyzap.d.ts'/>
 
-import { IProvider } from './IProvider'
-import { AdEvents, AdWrapper } from '../ad-wrapper'
-
-export enum HeyzapAdTypes {
-    Interstitial,
-    Video,
-    Rewarded,
-    Banner
-}
+import { IProvider } from './ad-provider'
+import { AdType, AdEvents, AdWrapper } from '../ad-wrapper'
 
 export class CordovaHeyzap implements IProvider {
     public adManager!: AdWrapper
@@ -34,19 +27,17 @@ export class CordovaHeyzap implements IProvider {
         this.adManager = manager
     }
 
-    public showAd(adType: HeyzapAdTypes, bannerAdPositions?: string): void {
+    public showAd(adType: AdType, bannerAdPositions?: string): void {
         if (!this.adsEnabled) {
-            this.adManager.unMuteAfterAd()
             this.adManager.emit(AdEvents.CONTENT_RESUMED)
         }
 
         switch (adType) {
-            case HeyzapAdTypes.Interstitial:
+            case AdType.interstitial:
                 // Register event listeners
                 HeyzapAds.InterstitialAd.addEventListener(
                     HeyzapAds.InterstitialAd.Events.HIDE,
                     () => {
-                        this.adManager.unMuteAfterAd()
                         this.adManager.emit(
                             AdEvents.CONTENT_RESUMED,
                             HeyzapAds.InterstitialAd.Events.HIDE
@@ -56,7 +47,6 @@ export class CordovaHeyzap implements IProvider {
                 HeyzapAds.InterstitialAd.addEventListener(
                     HeyzapAds.InterstitialAd.Events.SHOW_FAILED,
                     () => {
-                        this.adManager.unMuteAfterAd()
                         this.adManager.emit(
                             AdEvents.CONTENT_RESUMED,
                             HeyzapAds.InterstitialAd.Events.SHOW_FAILED
@@ -79,19 +69,16 @@ export class CordovaHeyzap implements IProvider {
                         this.adManager.emit(AdEvents.CONTENT_PAUSED)
                     },
                     (e: any) => {
-                        this.adManager.unMuteAfterAd()
                         // Failed to show insentive ad, continue operations
                         this.adManager.emit(AdEvents.CONTENT_RESUMED)
                     }
                 )
                 break
-            case HeyzapAdTypes.Video:
+            case AdType.interstitial:
                 HeyzapAds.VideoAd.addEventListener(HeyzapAds.VideoAd.Events.HIDE, () => {
-                    this.adManager.unMuteAfterAd()
                     this.adManager.emit(AdEvents.CONTENT_RESUMED, HeyzapAds.VideoAd.Events.HIDE)
                 })
                 HeyzapAds.VideoAd.addEventListener(HeyzapAds.VideoAd.Events.SHOW_FAILED, () => {
-                    this.adManager.unMuteAfterAd()
                     this.adManager.emit(
                         AdEvents.CONTENT_RESUMED,
                         HeyzapAds.VideoAd.Events.SHOW_FAILED
@@ -107,17 +94,15 @@ export class CordovaHeyzap implements IProvider {
                         this.adManager.emit(AdEvents.CONTENT_PAUSED)
                     },
                     (e: any) => {
-                        this.adManager.unMuteAfterAd()
                         // Failed to show insentive ad, continue operations
                         this.adManager.emit(AdEvents.CONTENT_RESUMED)
                     }
                 )
                 break
-            case HeyzapAdTypes.Rewarded:
+            case AdType.rewarded:
                 HeyzapAds.IncentivizedAd.addEventListener(
                     HeyzapAds.IncentivizedAd.Events.HIDE,
                     () => {
-                        this.adManager.unMuteAfterAd()
                         this.adManager.emit(
                             AdEvents.CONTENT_RESUMED,
                             HeyzapAds.IncentivizedAd.Events.HIDE
@@ -127,7 +112,6 @@ export class CordovaHeyzap implements IProvider {
                 HeyzapAds.IncentivizedAd.addEventListener(
                     HeyzapAds.IncentivizedAd.Events.SHOW_FAILED,
                     () => {
-                        this.adManager.unMuteAfterAd()
                         this.adManager.emit(
                             AdEvents.CONTENT_RESUMED,
                             HeyzapAds.IncentivizedAd.Events.SHOW_FAILED
@@ -150,13 +134,12 @@ export class CordovaHeyzap implements IProvider {
                         this.adManager.emit(AdEvents.CONTENT_PAUSED)
                     },
                     (e: any) => {
-                        this.adManager.unMuteAfterAd()
                         // Failed to show insentive ad, continue operations
                         this.adManager.emit(AdEvents.CONTENT_RESUMED)
                     }
                 )
                 break
-            case HeyzapAdTypes.Banner:
+            case AdType.banner:
                 if (undefined === bannerAdPositions) {
                     return
                 }
@@ -173,12 +156,16 @@ export class CordovaHeyzap implements IProvider {
         }
     }
 
-    public preloadAd(adType: HeyzapAdTypes): void {
+    public adAvailable(adType: AdType): boolean {
+        return true
+    }
+
+    public preloadAd(adType: AdType): void {
         if (!this.adsEnabled) {
             return
         }
 
-        if (adType === HeyzapAdTypes.Rewarded) {
+        if (adType === AdType.rewarded) {
             HeyzapAds.IncentivizedAd.fetch().then(
                 () => {
                     // Native call successful.
@@ -192,12 +179,12 @@ export class CordovaHeyzap implements IProvider {
         return
     }
 
-    public destroyAd(adType: HeyzapAdTypes): void {
+    public destroyAd(adType: AdType): void {
         if (!this.adsEnabled) {
             return
         }
 
-        if (adType === HeyzapAdTypes.Banner) {
+        if (adType === AdType.banner) {
             HeyzapAds.BannerAd.destroy().then(
                 () => {
                     // Native call successful.
@@ -211,12 +198,12 @@ export class CordovaHeyzap implements IProvider {
         return
     }
 
-    public hideAd(adType: HeyzapAdTypes): void {
+    public hideAd(adType: AdType): void {
         if (!this.adsEnabled) {
             return
         }
 
-        if (adType === HeyzapAdTypes.Banner) {
+        if (adType === AdType.banner) {
             HeyzapAds.BannerAd.hide().then(
                 () => {
                     // Native call successful.

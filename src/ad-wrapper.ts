@@ -1,11 +1,11 @@
 import EventEmitter from 'eventemitter3'
 
-export { CocoonAds } from './Providers/Cocoon'
-export { CordovaGameDistribution } from './Providers/CordovaGameDistribution'
-export { CordovaHeyzap } from './Providers/CordovaHeyzap'
-export { GameDistributionAds } from './Providers/GameDistributionAds'
-export { Ima3 } from './Providers/Ima3'
-export { IProvider } from './Providers/IProvider'
+export { CocoonAds } from './Providers/cocoon'
+export { CordovaGamedistribution } from './Providers/cordova-gamedistribution'
+export { CordovaHeyzap } from './Providers/cordova-heyzap'
+export { GameDistribution } from './Providers/gamedistribution'
+export { Ima3 } from './Providers/ima3'
+export { IProvider } from './Providers/ad-provider'
 
 export enum AdEvents {
     CONTENT_PAUSED = 'onContentPaused',
@@ -15,14 +15,14 @@ export enum AdEvents {
     AD_CLICKED = 'onAdClicked',
     AD_REWARDED = 'onAdRewardGranted',
     BANNER_SHOWN = 'onBannerShown',
-    BANNER_HIDDEN = 'onBannerHidden'
+    BANNER_HIDDEN = 'onBannerHidden',
+    AD_LOADED = 'onAdLoaded'
 }
 
 export enum AdType {
     interstitial,
     rewarded,
-    banner,
-    video
+    banner
 }
 
 export class AdWrapper extends EventEmitter {
@@ -44,13 +44,14 @@ export class AdWrapper extends EventEmitter {
      * Here we request an ad, the arguments passed depend on the provider used!
      * @param args
      */
-    public showAd(...args: any[]): void {
+    public showAd(adType: AdType, ...args: any[]): void {
         if (null === this.provider) {
             throw new Error(
                 'Can not request an ad without an provider, please attach an ad provider!'
             )
         }
 
+        args.unshift(adType)
         this.provider.showAd.apply(this.provider, args)
     }
 
@@ -59,13 +60,14 @@ export class AdWrapper extends EventEmitter {
      *
      * @param args
      */
-    public preloadAd(...args: any[]): void {
+    public preloadAd(adType: AdType, ...args: any[]): void {
         if (null === this.provider) {
             throw new Error(
                 'Can not preload an ad without an provider, please attach an ad provider!'
             )
         }
 
+        args.unshift(adType)
         this.provider.preloadAd.apply(this.provider, args)
     }
 
@@ -74,13 +76,14 @@ export class AdWrapper extends EventEmitter {
      *
      * @param args
      */
-    public destroyAd(...args: any[]): void {
+    public destroyAd(adType: AdType, ...args: any[]): void {
         if (null === this.provider) {
             throw new Error(
                 'Can not destroy an ad without an provider, please attach an ad provider!'
             )
         }
 
+        args.unshift(adType)
         this.provider.destroyAd.apply(this.provider, args)
     }
 
@@ -89,13 +92,11 @@ export class AdWrapper extends EventEmitter {
      *
      * @param args
      */
-    public hideAd(...args: any[]): void {
+    public hideAd(adType: AdType, ...args: any[]): void {
         if (null === this.provider) {
             throw new Error('Can not hide an ad without an provider, please attach an ad provider!')
         }
-
-        this.unMuteAfterAd()
-
+        args.unshift(adType)
         this.provider.hideAd.apply(this.provider, args)
     }
 
@@ -105,14 +106,23 @@ export class AdWrapper extends EventEmitter {
      * @param args
      */
     public adsEnabled(): boolean {
+        if (null === this.provider) {
+            throw new Error('Can not hide an ad without an provider, please attach an ad provider!')
+        }
         return this.provider.adsEnabled
     }
 
     /**
-     * Should be called after ad was(n't) shown, demutes the game so we can peacefully continue
+     * Checks if ads are enabled or blocked
+     *
+     * @param args
      */
-    public unMuteAfterAd(): void {
-        // Here we unmute audio, but only if it wasn't muted before requesting an add
+    public adAvailable(adType: AdType, ...args: any[]): boolean {
+        if (null === this.provider) {
+            throw new Error('Can not hide an ad without an provider, please attach an ad provider!')
+        }
+        args.unshift(adType)
+        return this.provider.adAvailable.apply(this.provider, args)
     }
 }
 

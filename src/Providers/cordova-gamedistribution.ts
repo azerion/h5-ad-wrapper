@@ -1,9 +1,9 @@
 /// <reference path='../../vendor/cordova-gamedistribution.d.ts'/>
 
-import { IProvider } from './IProvider'
-import { AdEvents, AdWrapper } from '../ad-wrapper'
+import { IProvider } from './ad-provider'
+import { AdType, AdEvents, AdWrapper } from '../ad-wrapper'
 
-export class CordovaGameDistribution implements IProvider {
+export class CordovaGamedistribution implements IProvider {
     public adManager!: AdWrapper
 
     public adsEnabled: boolean = false
@@ -65,7 +65,7 @@ export class CordovaGameDistribution implements IProvider {
         this.adManager = manager
     }
 
-    public showAd(): void {
+    public showAd(adType: AdType): void {
         if (this.adsEnabled) {
             console.log('show banner called')
             ;(cordova.plugins.gdApi as CordovaPluginGdApi).showBanner(
@@ -83,18 +83,22 @@ export class CordovaGameDistribution implements IProvider {
         }
     }
 
+    public adAvailable(adType: AdType): boolean {
+        return true
+    }
+
     // Does nothing, but needed for Provider interface
-    public preloadAd(): void {
+    public preloadAd(adType: AdType): void {
         return
     }
 
     // Does nothing, but needed for Provider interface
-    public destroyAd(): void {
+    public destroyAd(adType: AdType): void {
         return
     }
 
     // Does nothing, but needed for Provider interface
-    public hideAd(): void {
+    public hideAd(adType: AdType): void {
         return
     }
 }

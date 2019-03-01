@@ -1,19 +1,13 @@
 /// <reference path='../../vendor/cocoon.d.ts'/>
 
-import { IProvider } from './IProvider'
-import { AdEvents, AdWrapper } from '../ad-wrapper'
+import { IProvider } from './ad-provider'
+import { AdType, AdEvents, AdWrapper } from '../ad-wrapper'
 
 export enum CocoonProvider {
     AdMob,
     MoPub,
     Chartboost,
     Heyzap
-}
-
-export enum CocoonAdType {
-    banner,
-    interstitial,
-    insentive
 }
 
 export class CocoonAds implements IProvider {
@@ -66,18 +60,16 @@ export class CocoonAds implements IProvider {
         this.adManager = manager
     }
 
-    public showAd(adType: CocoonAdType): void {
+    public showAd(adType: AdType): void {
         if (!this.adsEnabled) {
-            this.adManager.unMuteAfterAd()
-            if (!(adType === CocoonAdType.banner)) {
+            if (!(adType === AdType.banner)) {
                 this.adManager.emit(AdEvents.CONTENT_RESUMED)
             }
             return
         }
 
-        if (adType === CocoonAdType.banner) {
+        if (adType === AdType.banner) {
             if (!this.bannerShowable || null === this.banner) {
-                this.adManager.unMuteAfterAd()
                 // No banner ad available, skipping
                 // this.adManager.onContentResumed.dispatch(CocoonAdType.banner);
                 return
@@ -88,22 +80,20 @@ export class CocoonAds implements IProvider {
             this.banner.show()
         }
 
-        if (adType === CocoonAdType.interstitial) {
+        if (adType === AdType.interstitial) {
             if (!this.interstitialShowable || null === this.interstitial) {
-                this.adManager.unMuteAfterAd()
                 // No banner ad available, skipping
-                this.adManager.emit(AdEvents.CONTENT_RESUMED, CocoonAdType.interstitial)
+                this.adManager.emit(AdEvents.CONTENT_RESUMED, AdType.interstitial)
                 return
             }
 
             this.interstitial.show()
         }
 
-        if (adType === CocoonAdType.insentive) {
+        if (adType === AdType.rewarded) {
             if (!this.insentiveShowable || null === this.insentive) {
-                this.adManager.unMuteAfterAd()
                 // No banner ad available, skipping
-                this.adManager.emit(AdEvents.CONTENT_RESUMED, CocoonAdType.insentive)
+                this.adManager.emit(AdEvents.CONTENT_RESUMED, AdType.rewarded)
 
                 return
             }
@@ -112,7 +102,11 @@ export class CocoonAds implements IProvider {
         }
     }
 
-    public preloadAd(adType: CocoonAdType, adId?: string, bannerPosition?: string): void {
+    public adAvailable(adType: AdType): boolean {
+        return true
+    }
+
+    public preloadAd(adType: AdType, adId?: string, bannerPosition?: string): void {
         if (!this.adsEnabled) {
             return
         }
@@ -120,7 +114,7 @@ export class CocoonAds implements IProvider {
         // Some cleanup before preloading a new ad
         this.destroyAd(adType)
 
-        if (adType === CocoonAdType.banner) {
+        if (adType === AdType.banner) {
             this.banner = this.cocoonProvider.createBanner(adId)
             if (bannerPosition) {
                 this.banner.setLayout(bannerPosition)
@@ -133,7 +127,7 @@ export class CocoonAds implements IProvider {
                 this.banner = null
             })
             this.banner.on('click', () => {
-                this.adManager.emit(AdEvents.AD_CLICKED, CocoonAdType.banner)
+                this.adManager.emit(AdEvents.AD_CLICKED, AdType.banner)
             })
 
             // Banner don't pause or resume content
@@ -153,7 +147,7 @@ export class CocoonAds implements IProvider {
             this.banner.load()
         }
 
-        if (adType === CocoonAdType.interstitial) {
+        if (adType === AdType.interstitial) {
             this.interstitial = this.cocoonProvider.createInterstitial(adId)
             this.interstitial.on('load', () => {
                 this.interstitialShowable = true
@@ -163,16 +157,15 @@ export class CocoonAds implements IProvider {
                 this.interstitial = null
             })
             this.interstitial.on('click', () => {
-                this.adManager.emit(AdEvents.AD_CLICKED, CocoonAdType.interstitial)
+                this.adManager.emit(AdEvents.AD_CLICKED, AdType.interstitial)
             })
 
             this.interstitial.on('show', () => {
-                this.adManager.emit(AdEvents.CONTENT_PAUSED, CocoonAdType.interstitial)
+                this.adManager.emit(AdEvents.CONTENT_PAUSED, AdType.interstitial)
             })
 
             this.interstitial.on('dismiss', () => {
-                this.adManager.unMuteAfterAd()
-                this.adManager.emit(AdEvents.CONTENT_RESUMED, CocoonAdType.interstitial)
+                this.adManager.emit(AdEvents.CONTENT_RESUMED, AdType.interstitial)
 
                 this.interstitialShowable = false
                 this.interstitial = null
@@ -180,7 +173,7 @@ export class CocoonAds implements IProvider {
             this.interstitial.load()
         }
 
-        if (adType === CocoonAdType.insentive) {
+        if (adType === AdType.rewarded) {
             this.insentive = this.cocoonProvider.createRewardedVideo(adId)
             this.insentive.on('load', () => {
                 this.insentiveShowable = true
@@ -190,23 +183,21 @@ export class CocoonAds implements IProvider {
                 this.insentive = null
             })
             this.insentive.on('click', () => {
-                this.adManager.emit(AdEvents.AD_CLICKED, CocoonAdType.insentive)
+                this.adManager.emit(AdEvents.AD_CLICKED, AdType.rewarded)
             })
 
             this.insentive.on('show', () => {
-                this.adManager.emit(AdEvents.CONTENT_PAUSED, CocoonAdType.insentive)
+                this.adManager.emit(AdEvents.CONTENT_PAUSED, AdType.rewarded)
             })
 
             this.insentive.on('dismiss', () => {
-                this.adManager.unMuteAfterAd()
-                this.adManager.emit(AdEvents.CONTENT_RESUMED, CocoonAdType.insentive)
+                this.adManager.emit(AdEvents.CONTENT_RESUMED, AdType.rewarded)
                 this.insentiveShowable = false
                 this.insentive = null
             })
 
             this.insentive.on('reward', () => {
-                this.adManager.unMuteAfterAd()
-                this.adManager.emit(AdEvents.AD_REWARDED, CocoonAdType.insentive)
+                this.adManager.emit(AdEvents.AD_REWARDED, AdType.rewarded)
                 this.insentiveShowable = false
                 this.insentive = null
             })
@@ -214,12 +205,12 @@ export class CocoonAds implements IProvider {
         }
     }
 
-    public destroyAd(adType: CocoonAdType): void {
+    public destroyAd(adType: AdType): void {
         if (!this.adsEnabled) {
             return
         }
 
-        if (adType === CocoonAdType.banner && null !== this.banner) {
+        if (adType === AdType.banner && null !== this.banner) {
             // Releasing banners will fail on cocoon due to:
             // https://github.com/ludei/atomic-plugins-ads/pull/12
             try {
@@ -231,25 +222,25 @@ export class CocoonAds implements IProvider {
             this.bannerShowable = false
         }
 
-        if (adType === CocoonAdType.interstitial && null !== this.interstitial) {
+        if (adType === AdType.interstitial && null !== this.interstitial) {
             this.cocoonProvider.releaseInterstitial(this.interstitial)
             this.interstitial = null
             this.interstitialShowable = false
         }
     }
 
-    public hideAd(adType: CocoonAdType): void {
+    public hideAd(adType: AdType): void {
         if (!this.adsEnabled) {
             return
         }
 
-        if (adType === CocoonAdType.interstitial && null !== this.interstitial) {
+        if (adType === AdType.interstitial && null !== this.interstitial) {
             this.interstitial.hide()
 
             // this.adManager.onContentResumed.dispatch(CocoonAdType.interstitial);
         }
 
-        if (adType === CocoonAdType.banner && null !== this.banner) {
+        if (adType === AdType.banner && null !== this.banner) {
             if (this.adManager.bannerActive) {
                 this.adManager.bannerActive = false
                 this.adManager.emit(AdEvents.BANNER_HIDDEN, this.banner.width, this.banner.height)
@@ -259,7 +250,7 @@ export class CocoonAds implements IProvider {
             // this.adManager.onContentResumed.dispatch(CocoonAdType.banner);
         }
 
-        if (adType === CocoonAdType.insentive && null !== this.insentive) {
+        if (adType === AdType.rewarded && null !== this.insentive) {
             this.insentive.hide()
 
             // this.adManager.onContentResumed.dispatch(CocoonAdType.insentive);

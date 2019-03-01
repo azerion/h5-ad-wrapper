@@ -1,7 +1,7 @@
 /// <reference path='../../vendor/google-ima3-sdk.d.ts'/>
 
-import { IProvider } from './IProvider'
-import { AdEvents, AdWrapper } from '../ad-wrapper'
+import { IProvider } from './ad-provider'
+import { AdType, AdEvents, AdWrapper } from '../ad-wrapper'
 
 enum GoogleAdEvent {
     start,
@@ -101,7 +101,7 @@ export class Ima3 implements IProvider {
      * Doing an ad request, if anything is wrong with the lib (missing ima3, failed request) we just dispatch the contentResumed event
      * Otherwise we display an ad
      */
-    public showAd(customParams?: ICustomParams): void {
+    public showAd(adType: AdType, customParams?: ICustomParams): void {
         console.log('Ad Requested')
         if (this.adRequested) {
             return
@@ -151,6 +151,10 @@ export class Ima3 implements IProvider {
             console.log(e)
             this.onContentResumeRequested()
         }
+    }
+
+    public adAvailable(adType: AdType): boolean {
+        return true
     }
 
     // Does nothing, but needed for Provider interface
@@ -207,7 +211,6 @@ export class Ima3 implements IProvider {
             false,
             this
         )
-
         ;[
             google.ima.AdEvent.Type.ALL_ADS_COMPLETED,
             google.ima.AdEvent.Type.CLICK,
@@ -334,14 +337,12 @@ export class Ima3 implements IProvider {
         console.log('onContentResumeRequested', arguments)
 
         if (typeof google === 'undefined') {
-            this.adManager.unMuteAfterAd()
             this.adManager.emit(AdEvents.CONTENT_RESUMED)
 
             return
         }
 
         this.adContent.style.display = 'none'
-        this.adManager.unMuteAfterAd()
         this.adManager.emit(AdEvents.CONTENT_RESUMED)
     }
 
