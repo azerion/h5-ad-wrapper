@@ -10,7 +10,7 @@
     <script type="text/javascript" src="../node_modules/@orange-games/phaser/build/phaser.min.js"></script>
     <script type="text/javascript" src="../dist/ad-wrapper.umd.js"></script>
 
-    <style type="text/css">
+    <style type="text/css">`
         body {
             margin: 0 auto;
             padding: 0;
@@ -34,7 +34,7 @@
             game.sound.muteOnPause = false;
 
             //Set the ad provider, we use google Ima3 (ima 3 sdk)
-            ogsdk.ads.setAdProvider(new ogsdk.GameDistribution(
+            azsdk.ads.setAdProvider(new ogsdk.GameDistribution(
                 '2d77cfd4b1e5487d998465c29de195b3' //Your game id goes here
             ));
 
