@@ -4,7 +4,7 @@ import sourceMaps from 'rollup-plugin-sourcemaps';
 import typescript from 'rollup-plugin-typescript2';
 import json from 'rollup-plugin-json';
 import serve from 'rollup-plugin-serve';
-import livereload from 'rollup-plugin-livereload'
+import livereload from 'rollup-plugin-livereload';
 
 const pkg = require('./package.json');
 
@@ -22,7 +22,7 @@ if (isWatching) {
         livereload({
             watch: 'dist'
         }),
-    ]
+    ];
 }
 export default {
     input: `src/${libraryName}.ts`,
@@ -49,5 +49,5 @@ export default {
 
         // Resolve source maps to the original source
         sourceMaps(),
-    ]),
+    ])
 };

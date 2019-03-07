@@ -10,7 +10,7 @@
     <script type="text/javascript" src="../node_modules/@orange-games/phaser/build/phaser.min.js"></script>
     <script type="text/javascript" src="../dist/ad-wrapper.umd.js"></script>
 
-    <style type="text/css">`
+    <style type="text/css">
         body {
             margin: 0 auto;
             padding: 0;
@@ -34,7 +34,7 @@
             game.sound.muteOnPause = false;
 
             //Set the ad provider, we use google Ima3 (ima 3 sdk)
-            azsdk.ads.setAdProvider(new ogsdk.GameDistribution(
+            azsdk.ads.setAdProvider(new azsdk.GameDistribution(
                 '2d77cfd4b1e5487d998465c29de195b3' //Your game id goes here
             ));
 
@@ -57,38 +57,38 @@
             game.sound.play('boden', 0.3, true);
 
             //Content paused event is fired when the content (game) should be paused, and the ad will be played
-            ogsdk.ads.on(ogsdk.AdEvents.CONTENT_PAUSED,function () {
+            azsdk.ads.on(azsdk.AdEvents.CONTENT_PAUSED,function () {
                 game.sound.mute = true;
                 console.error('Started playing ad.');
             });
 
             //This is fired when the ad is finished playing and the content (game) should be resumed
-            ogsdk.ads.on(ogsdk.AdEvents.CONTENT_RESUMED, function () {
+            azsdk.ads.on(azsdk.AdEvents.CONTENT_RESUMED, function () {
                 game.sound.mute = false;
                 text.visible = false;
                 console.error('Finished playing ad.');
             });
 
             //This is fired when the ad was clicked by the user
-            ogsdk.ads.on(ogsdk.AdEvents.AD_CLICKED,function () {
+            azsdk.ads.on(azsdk.AdEvents.AD_CLICKED,function () {
                 console.error('Clicked the ad!');
             });
 
-            ogsdk.ads.on(ogsdk.AdEvents.AD_REWARDED, function () {
+            azsdk.ads.on(azsdk.AdEvents.AD_REWARDED, function () {
                 console.error('Received ad reward!.');
             });
 
             //This gives us details about how far the users is viewing the add
-            ogsdk.ads.on(ogsdk.AdEvents.AD_DISABLED,function (progression) {
+            azsdk.ads.on(azsdk.AdEvents.AD_DISABLED,function (progression) {
                 console.error(progression);
             });
 
             //This is fired when the ad was clicked by the user
-            ogsdk.ads.on(ogsdk.AdEvents.AD_DISABLED, function () {
+            azsdk.ads.on(azsdk.AdEvents.AD_DISABLED, function () {
                 console.error('Ads are being blocked.');
             });
 
-            // ogsdk.ads.on(ogsdk.AdEvents.AD_LOADED, function () {
+            // azsdk.ads.on(azsdk.AdEvents.AD_LOADED, function () {
             //     console.error('Rewarded ad loaded.');
             // });
 //            game.sound.mute = true;
@@ -97,9 +97,9 @@
             var showAd = function(adType) {
                 text.visible = true;
 
-                var adsEnabled = ogsdk.ads.provider.adsEnabled;
+                var adsEnabled = azsdk.ads.provider.adsEnabled;
                 if (adsEnabled) {
-                    ogsdk.ads.showAd(adType);
+                    azsdk.ads.showAd(adType);
                 } else {
                     //the actual game content, behind the ad
                     var block = game.add.text(game.width / 2, game.height / 2 + 60, 'Ads are being blocked.', {
@@ -117,7 +117,7 @@
                     .endFill();
             var texture = graphics.generateTexture();
             var button = game.add.button(game.width / 2, game.height *.75, texture, function () {
-                showAd(ogsdk.AdType.interstitial);
+                showAd(azsdk.AdType.interstitial);
             });
             button.anchor.set(0.5, 0.5);
             var label = game.add.text(0, 0, 'See ad', {
@@ -128,7 +128,7 @@
             button.addChild(label);
 
             var button = game.add.button(game.width / 2, game.height *.5, texture, function () {
-                showAd(ogsdk.AdType.rewarded);
+                showAd(azsdk.AdType.rewarded);
             });
             button.anchor.set(0.5, 0.5);
             var label = game.add.text(0, 0, 'See rewarded', {
@@ -139,7 +139,7 @@
             button.addChild(label);
 
             var button = game.add.button(game.width / 2, game.height *.25, texture, function () {
-                ogsdk.ads.preloadAd(ogsdk.AdType.rewarded);
+                azsdk.ads.preloadAd(azsdk.AdType.rewarded);
             });
             button.anchor.set(0.5, 0.5);
             var label = game.add.text(0, 0, 'Preload rewarded', {
