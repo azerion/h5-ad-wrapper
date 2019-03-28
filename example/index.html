@@ -37,7 +37,6 @@
             azsdk.ads.setAdProvider(new azsdk.GameDistribution(
                 '2d77cfd4b1e5487d998465c29de195b3' //Your game id goes here
             ));
-
         }
 
         function preload() {
@@ -86,6 +85,9 @@
             //This is fired when the ad was clicked by the user
             azsdk.ads.on(azsdk.AdEvents.AD_DISABLED, function () {
                 console.error('Ads are being blocked.');
+            });            //This is fired when the ad was clicked by the user
+            azsdk.ads.on(azsdk.AdEvents.AD_PROVIDER_LOADED, function () {
+                console.error('Ads Provider loaded and ready.');
             });
 
             // azsdk.ads.on(azsdk.AdEvents.AD_LOADED, function () {

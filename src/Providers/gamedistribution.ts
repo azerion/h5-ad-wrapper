@@ -11,7 +11,7 @@ enum GameDistributionAdType {
 export class GameDistribution implements IProvider {
     public adManager!: AdWrapper
 
-    public adsEnabled: boolean = true
+    public adsEnabled: boolean = false
 
     public hasRewarded: boolean = false
 
@@ -22,6 +22,11 @@ export class GameDistribution implements IProvider {
             gameId: gameId,
             advertisementSettings: {
                 autoplay: false
+            },
+            onEvent: (event: any) => {
+                if (event.name === 'SDK_READY') {
+                    this.sdkLoaded()
+                }
             }
         } as IGameDistributionSettings
 
@@ -43,6 +48,15 @@ export class GameDistribution implements IProvider {
 
     public setManager(manager: AdWrapper): void {
         this.adManager = manager
+    }
+
+    private sdkLoaded(): void {
+        this.areAdsEnabled().then((enabled: boolean) => {
+            if (enabled) {
+                this.adsEnabled = true
+                this.adManager.emit(AdEvents.AD_PROVIDER_LOADED)
+            }
+        })
     }
 
     public showAd(adType: AdType): void {
@@ -93,10 +107,10 @@ export class GameDistribution implements IProvider {
 
     //Does nothing, but needed for Provider interface
     public preloadAd(adType: AdType): void {
-        if (this.hasRewarded) {
+        if (this.hasRewarded || !this.adsEnabled) {
             return
         }
-
+        console.log('preloading ad')
         gdsdk.preloadAd(GameDistributionAdType.rewarded).then(() => {
             this.hasRewarded = true
             this.adManager.emit(AdEvents.AD_LOADED, adType)
@@ -125,7 +139,7 @@ export class GameDistribution implements IProvider {
      * Checks if the ads are enabled (e.g; adblock is enabled or not)
      * @returns {boolean}
      */
-    private areAdsEnabled(): void {
+    private areAdsEnabled(): Promise<boolean> {
         let test: HTMLElement = document.createElement('div')
         test.innerHTML = '&nbsp;'
         test.className = 'adsbox'
@@ -146,8 +160,10 @@ export class GameDistribution implements IProvider {
             return enabled
         }
 
-        window.setTimeout(() => {
-            this.adsEnabled = isEnabled()
-        }, 100)
+        return new Promise(resolve => {
+            window.setTimeout(() => {
+                resolve(isEnabled())
+            }, 100)
+        })
     }
 }

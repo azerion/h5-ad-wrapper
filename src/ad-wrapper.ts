@@ -16,7 +16,8 @@ export enum AdEvents {
     AD_REWARDED = 'onAdRewardGranted',
     BANNER_SHOWN = 'onBannerShown',
     BANNER_HIDDEN = 'onBannerHidden',
-    AD_LOADED = 'onAdLoaded'
+    AD_LOADED = 'onAdLoaded',
+    AD_PROVIDER_LOADED = 'onAdProviderLoaded'
 }
 
 export enum AdType {
