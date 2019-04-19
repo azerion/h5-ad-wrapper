@@ -34,7 +34,7 @@
             game.sound.muteOnPause = false;
 
             //Set the ad provider, we use google Ima3 (ima 3 sdk)
-            azsdk.ads.setAdProvider(new azsdk.GameDistribution(
+            h5ads.adWrapper.setAdProvider(new h5ads.GameDistribution(
                 '2d77cfd4b1e5487d998465c29de195b3' //Your game id goes here
             ));
         }
@@ -56,41 +56,41 @@
             game.sound.play('boden', 0.3, true);
 
             //Content paused event is fired when the content (game) should be paused, and the ad will be played
-            azsdk.ads.on(azsdk.AdEvents.CONTENT_PAUSED,function () {
+            h5ads.adWrapper.on(h5ads.AdEvents.CONTENT_PAUSED,function () {
                 game.sound.mute = true;
                 console.error('Started playing ad.');
             });
 
             //This is fired when the ad is finished playing and the content (game) should be resumed
-            azsdk.ads.on(azsdk.AdEvents.CONTENT_RESUMED, function () {
+            h5ads.adWrapper.on(h5ads.AdEvents.CONTENT_RESUMED, function () {
                 game.sound.mute = false;
                 text.visible = false;
                 console.error('Finished playing ad.');
             });
 
             //This is fired when the ad was clicked by the user
-            azsdk.ads.on(azsdk.AdEvents.AD_CLICKED,function () {
+            h5ads.adWrapper.on(h5ads.AdEvents.AD_CLICKED,function () {
                 console.error('Clicked the ad!');
             });
 
-            azsdk.ads.on(azsdk.AdEvents.AD_REWARDED, function () {
+            h5ads.adWrapper.on(h5ads.AdEvents.AD_REWARDED, function () {
                 console.error('Received ad reward!.');
             });
 
             //This gives us details about how far the users is viewing the add
-            azsdk.ads.on(azsdk.AdEvents.AD_DISABLED,function (progression) {
+            h5ads.adWrapper.on(h5ads.AdEvents.AD_DISABLED,function (progression) {
                 console.error(progression);
             });
 
             //This is fired when the ad was clicked by the user
-            azsdk.ads.on(azsdk.AdEvents.AD_DISABLED, function () {
+            h5ads.adWrapper.on(h5ads.AdEvents.AD_DISABLED, function () {
                 console.error('Ads are being blocked.');
             });            //This is fired when the ad was clicked by the user
-            azsdk.ads.on(azsdk.AdEvents.AD_PROVIDER_LOADED, function () {
+            h5ads.adWrapper.on(h5ads.AdEvents.AD_PROVIDER_LOADED, function () {
                 console.error('Ads Provider loaded and ready.');
             });
 
-            // azsdk.ads.on(azsdk.AdEvents.AD_LOADED, function () {
+            // h5ads.adWrapper.on(h5ads.AdEvents.AD_LOADED, function () {
             //     console.error('Rewarded ad loaded.');
             // });
 //            game.sound.mute = true;
@@ -99,9 +99,9 @@
             var showAd = function(adType) {
                 text.visible = true;
 
-                var adsEnabled = azsdk.ads.provider.adsEnabled;
+                var adsEnabled = h5ads.adWrapper.provider.adsEnabled;
                 if (adsEnabled) {
-                    azsdk.ads.showAd(adType);
+                    h5ads.adWrapper.showAd(adType);
                 } else {
                     //the actual game content, behind the ad
                     var block = game.add.text(game.width / 2, game.height / 2 + 60, 'Ads are being blocked.', {
@@ -119,7 +119,7 @@
                     .endFill();
             var texture = graphics.generateTexture();
             var button = game.add.button(game.width / 2, game.height *.75, texture, function () {
-                showAd(azsdk.AdType.interstitial);
+                showAd(h5ads.AdType.interstitial);
             });
             button.anchor.set(0.5, 0.5);
             var label = game.add.text(0, 0, 'See ad', {
@@ -130,7 +130,7 @@
             button.addChild(label);
 
             var button = game.add.button(game.width / 2, game.height *.5, texture, function () {
-                showAd(azsdk.AdType.rewarded);
+                showAd(h5ads.AdType.rewarded);
             });
             button.anchor.set(0.5, 0.5);
             var label = game.add.text(0, 0, 'See rewarded', {
@@ -141,7 +141,7 @@
             button.addChild(label);
 
             var button = game.add.button(game.width / 2, game.height *.25, texture, function () {
-                azsdk.ads.preloadAd(azsdk.AdType.rewarded);
+                h5ads.adWrapper.preloadAd(h5ads.AdType.rewarded);
             });
             button.anchor.set(0.5, 0.5);
             var label = game.add.text(0, 0, 'Preload rewarded', {

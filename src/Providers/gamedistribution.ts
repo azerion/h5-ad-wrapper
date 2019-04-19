@@ -1,7 +1,7 @@
 /// <reference path='../../vendor/game-distribution.d.ts'/>
 
 import { IProvider } from './ad-provider'
-import { AdEvents, AdType, AdWrapper } from '../ad-wrapper'
+import { AdEvents, AdType, H5AdWrapper } from '../h5-ad-wrapper'
 
 enum GameDistributionAdType {
     interstitial = 'interstitial',
@@ -9,7 +9,7 @@ enum GameDistributionAdType {
 }
 
 export class GameDistribution implements IProvider {
-    public adManager!: AdWrapper
+    public adManager!: H5AdWrapper
 
     public adsEnabled: boolean = false
 
@@ -46,7 +46,7 @@ export class GameDistribution implements IProvider {
         })(document, 'script', 'gamedistribution-jssdk')
     }
 
-    public setManager(manager: AdWrapper): void {
+    public setManager(manager: H5AdWrapper): void {
         this.adManager = manager
     }
 
@@ -73,7 +73,7 @@ export class GameDistribution implements IProvider {
                 return
             }
 
-            if (adType === AdType.rewarded && this.hasRewarded === false) {
+            if (adType === AdType.rewarded && !this.hasRewarded) {
                 this.adManager.emit(AdEvents.CONTENT_RESUMED)
 
                 return
@@ -87,7 +87,7 @@ export class GameDistribution implements IProvider {
                         : GameDistributionAdType.interstitial
                 )
                 .then(() => {
-                    if (adType === AdType.rewarded && this.hasRewarded === true) {
+                    if (adType === AdType.rewarded && this.hasRewarded) {
                         this.adManager.emit(AdEvents.AD_REWARDED)
 
                         this.hasRewarded = false
@@ -96,7 +96,7 @@ export class GameDistribution implements IProvider {
                     this.adManager.emit(AdEvents.CONTENT_RESUMED)
                 })
                 .catch(() => {
-                    if (adType === AdType.rewarded && this.hasRewarded === true) {
+                    if (adType === AdType.rewarded && this.hasRewarded) {
                         this.hasRewarded = false
                     }
 

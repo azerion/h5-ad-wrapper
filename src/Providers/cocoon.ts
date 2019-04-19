@@ -1,7 +1,7 @@
 /// <reference path='../../vendor/cocoon.d.ts'/>
 
 import { IProvider } from './ad-provider'
-import { AdType, AdEvents, AdWrapper } from '../ad-wrapper'
+import { AdType, AdEvents, H5AdWrapper } from '../h5-ad-wrapper'
 
 export enum CocoonProvider {
     AdMob,
@@ -11,7 +11,7 @@ export enum CocoonProvider {
 }
 
 export class CocoonAds implements IProvider {
-    public adManager!: AdWrapper
+    public adManager!: H5AdWrapper
 
     public adsEnabled: boolean = false
 
@@ -56,7 +56,7 @@ export class CocoonAds implements IProvider {
         this.cocoonProvider.configure(config)
     }
 
-    public setManager(manager: AdWrapper): void {
+    public setManager(manager: H5AdWrapper): void {
         this.adManager = manager
     }
 

@@ -26,7 +26,7 @@ export enum AdType {
     banner
 }
 
-export class AdWrapper extends EventEmitter {
+export class H5AdWrapper extends EventEmitter {
     public bannerActive: boolean = false
 
     private provider: any = null
@@ -43,6 +43,7 @@ export class AdWrapper extends EventEmitter {
 
     /**
      * Here we request an ad, the arguments passed depend on the provider used!
+     * @param adType
      * @param args
      */
     public showAd(adType: AdType, ...args: any[]): void {
@@ -59,6 +60,7 @@ export class AdWrapper extends EventEmitter {
     /**
      * Some providers might require you to preload an ad before showing it, that can be done here
      *
+     * @param adType
      * @param args
      */
     public preloadAd(adType: AdType, ...args: any[]): void {
@@ -75,6 +77,7 @@ export class AdWrapper extends EventEmitter {
     /**
      * Some providers require you to destroy an add after it was shown, that can be done here.
      *
+     * @param adType
      * @param args
      */
     public destroyAd(adType: AdType, ...args: any[]): void {
@@ -91,6 +94,7 @@ export class AdWrapper extends EventEmitter {
     /**
      * Some providers allow you to hide an ad, you might think of an banner ad that is shown in show cases
      *
+     * @param adType
      * @param args
      */
     public hideAd(adType: AdType, ...args: any[]): void {
@@ -103,8 +107,6 @@ export class AdWrapper extends EventEmitter {
 
     /**
      * Checks if ads are enabled or blocked
-     *
-     * @param args
      */
     public adsEnabled(): boolean {
         if (null === this.provider) {
@@ -116,6 +118,7 @@ export class AdWrapper extends EventEmitter {
     /**
      * Checks if ads are enabled or blocked
      *
+     * @param adType
      * @param args
      */
     public adAvailable(adType: AdType, ...args: any[]): boolean {
@@ -127,4 +130,4 @@ export class AdWrapper extends EventEmitter {
     }
 }
 
-export const ads: AdWrapper = new AdWrapper()
+export const adWrapper: H5AdWrapper = new H5AdWrapper()

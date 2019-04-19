@@ -1,7 +1,7 @@
 /// <reference path='../../vendor/google-ima3-sdk.d.ts'/>
 
 import { IProvider } from './ad-provider'
-import { AdType, AdEvents, AdWrapper } from '../ad-wrapper'
+import { AdType, AdEvents, H5AdWrapper } from '../h5-ad-wrapper'
 
 enum GoogleAdEvent {
     start,
@@ -34,7 +34,7 @@ export class Ima3 implements IProvider {
 
     private adRequested: boolean = false
 
-    public adManager!: AdWrapper
+    public adManager!: H5AdWrapper
 
     private resizeListener!: () => void
 
@@ -93,7 +93,7 @@ export class Ima3 implements IProvider {
         )
     }
 
-    public setManager(manager: AdWrapper): void {
+    public setManager(manager: H5AdWrapper): void {
         this.adManager = manager
     }
 

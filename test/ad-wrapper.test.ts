@@ -1,10 +1,10 @@
-import { ads, AdWrapper } from '../src/ad-wrapper'
+import { ads, H5AdWrapper } from '../src/h5-ad-wrapper'
 
 /**
  * AdWrapper test
  */
 describe('ads isntance', () => {
     it('', () => {
-        expect(ads).toBeInstanceOf(AdWrapper)
+        expect(ads).toBeInstanceOf(H5AdWrapper)
     })
 })

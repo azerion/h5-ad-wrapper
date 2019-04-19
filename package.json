@@ -1,7 +1,7 @@
 {
     "name": "@azerion/h5-ad-wrapper",
     "author": "OrangeGames",
-    "version": "0.1.0-alpha.4",
+    "version": "0.2.0",
     "description": "Advertisement provider wrapper, similar to @orange-games/phaser-ads but not tied into Phaser :)",
     "contributors": [
         {
@@ -27,8 +27,8 @@
     "scripts": {
         "lint": "tslint  --project tsconfig.json -t codeFrame 'src/**/*.ts' 'test/**/*.ts'",
         "prebuild": "rimraf dist",
-        "build": "tsc --module commonjs && rollup -c rollup.config.ts && typedoc --out docs --target es6 --theme minimal --mode file src",
-        "start": "rollup -c rollup.config.ts -w",
+        "dist": "tsc --module commonjs && rollup -c rollup.config.ts && typedoc --out docs --target es6 --theme minimal --mode file src",
+        "dev": "rollup -c rollup.config.ts -w",
         "test": "jest --coverage",
         "test:watch": "jest --coverage --watch",
         "test:prod": "npm run lint && npm run test -- --no-cache",

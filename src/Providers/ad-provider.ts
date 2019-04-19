@@ -1,10 +1,10 @@
-import { AdType, AdWrapper } from '../ad-wrapper'
+import { AdType, H5AdWrapper } from '../h5-ad-wrapper'
 
 export interface IProvider {
-    adManager: AdWrapper
+    adManager: H5AdWrapper
     adsEnabled: boolean
 
-    setManager(manager: AdWrapper): void
+    setManager(manager: H5AdWrapper): void
     preloadAd(adType: AdType, ...args: any[]): void
     destroyAd(adType: AdType, ...args: any[]): void
     hideAd(adType: AdType, ...args: any[]): void

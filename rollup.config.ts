@@ -8,7 +8,7 @@ import livereload from 'rollup-plugin-livereload';
 
 const pkg = require('./package.json');
 
-const libraryName = 'ad-wrapper';
+const libraryName = 'h5-ad-wrapper';
 
 const isWatching = process.argv.findIndex((element) => element === '-w') !== -1;
 
@@ -27,7 +27,7 @@ if (isWatching) {
 export default {
     input: `src/${libraryName}.ts`,
     output: [
-        {file: pkg.main, name: 'azsdk', format: 'umd', sourcemap: true, extend: true},
+        {file: pkg.main, name: 'h5ads', format: 'umd', sourcemap: true, extend: true},
         {file: pkg.module, format: 'es', sourcemap: true},
     ],
     // Indicate here external modules you don't wanna include in your bundle (i.e.: 'lodash')
