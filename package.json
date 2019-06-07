@@ -1,7 +1,7 @@
 {
     "name": "@azerion/h5-ad-wrapper",
     "author": "OrangeGames",
-    "version": "0.2.0",
+    "version": "0.2.1-alpha.1",
     "description": "Advertisement provider wrapper, similar to @orange-games/phaser-ads but not tied into Phaser :)",
     "contributors": [
         {
@@ -14,7 +14,8 @@
     "typings": "dist/types/ad-wrapper.d.ts",
     "files": [
         "dist",
-        "vendor"
+        "vendor",
+        "src"
     ],
     "repository": {
         "type": "git",
@@ -83,43 +84,43 @@
         ]
     },
     "devDependencies": {
-        "@commitlint/cli": "^7.1.2",
-        "@commitlint/config-conventional": "^7.1.2",
+        "@commitlint/cli": "^7.6.1",
+        "@commitlint/config-conventional": "^7.6.0",
         "@orange-games/phaser": "^2.6.14",
         "@types/jest": "^23.3.2",
-        "@types/node": "^10.11.0",
+        "@types/node": "^10.14.8",
         "colors": "^1.3.2",
-        "commitizen": "^3.0.0",
-        "coveralls": "^3.0.2",
+        "commitizen": "^3.1.1",
+        "coveralls": "^3.0.4",
         "cross-env": "^5.2.0",
         "cz-conventional-changelog": "^2.1.0",
         "husky": "^1.0.1",
-        "jest": "^23.6.0",
-        "jest-config": "^24.1.0",
-        "lint-staged": "^8.0.0",
+        "jest": "^24.8.0",
+        "jest-config": "^24.8.0",
+        "lint-staged": "^8.2.0",
         "lodash.camelcase": "^4.3.0",
-        "prettier": "^1.14.3",
+        "prettier": "^1.18.0",
         "prompt": "^1.0.0",
-        "replace-in-file": "^3.4.2",
+        "replace-in-file": "^3.4.4",
         "rimraf": "^2.6.2",
         "rollup": "^0.67.0",
-        "rollup-plugin-commonjs": "^9.1.8",
+        "rollup-plugin-commonjs": "^9.3.4",
         "rollup-plugin-json": "^3.1.0",
         "rollup-plugin-livereload": "^1.0.0",
         "rollup-plugin-node-resolve": "^3.4.0",
         "rollup-plugin-serve": "^1.0.1",
         "rollup-plugin-sourcemaps": "^0.4.2",
-        "rollup-plugin-typescript2": "^0.19.3",
+        "rollup-plugin-typescript2": "^0.21.1",
         "shelljs": "^0.8.3",
         "ts-jest": "^23.10.2",
         "ts-node": "^7.0.1",
-        "tslint": "^5.11.0",
+        "tslint": "^5.17.0",
         "tslint-config-prettier": "^1.15.0",
         "tslint-config-standard": "^8.0.1",
-        "typedoc": "^0.12.0",
-        "typescript": "^3.3.3333"
+        "typedoc": "^0.14.2",
+        "typescript": "^3.5.1"
     },
     "dependencies": {
-        "eventemitter3": "^3.1.0"
+        "eventemitter3": "^3.1.2"
     }
 }
