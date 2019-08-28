@@ -3,6 +3,9 @@ declare var IronSourceAds: any | undefined
 import { IProvider } from './ad-provider'
 import { AdType, AdEvents, H5AdWrapper } from '../h5-ad-wrapper'
 
+/**
+ * The cordova Ironsource ad provider requires the cordova-plugin-ironsource-ads plugin to be setup within your cordova app.
+ */
 export class CordovaIronSource implements IProvider {
     public adManager!: H5AdWrapper
     public adsEnabled: boolean = false

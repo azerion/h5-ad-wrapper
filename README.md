@@ -1,7 +1,6 @@
 [![npm version](https://badge.fury.io/js/%40azerion%2Fh5-ad-wrapper.svg)](https://badge.fury.io/js/%40azerion%2Fh5-ad-wrapper) 
 [![jsDelivr Hits](https://data.jsdelivr.com/v1/package/npm/@azerion/h5-ad-wrapper/badge)](https://www.jsdelivr.com/package/npm/@azerion/h5-ad-wrapper)
 
-
 # h5-ad-wrapper
 This ad wrapper that allows you to leverage different ad providers whilst providing the same simple API.
 Also allows you to easily integrate mobile ads (via [Cordova](https://cordova.apache.org)).
@@ -12,6 +11,7 @@ Key features:
    - IMA3 SDK
    - Cordova (support for AdMob/HeyZap/MoPub/Chartboost)
    - HeyZap for Cordova
+   - Ironsource for Cordova
  - Integrates nicely into any HTML5 gaming framework
  - Fullscreen ad support
  - Rewarded ad support
@@ -36,11 +36,17 @@ Usage
 -----
 Check the API docs right [here](https://azerion.github.io/h5-ad-wrapper/)
 
-First thing you need to do after loading the plugin is attaching a provider to the adManager. h5-ad-wrapper comes pre-compiled with 4 providers for you to choose from:
+First thing you need to do after loading the plugin is attaching a provider to the adManager. h5-ad-wrapper comes pre-compiled with multiple providers for you to choose from.
+
+For web you can use:
  - [Gamedistribution.com](https://gamedistribution.com)
  - [IMA SDK](https://developers.google.com/interactive-media-ads/docs/sdks/html5)
- - [Cocoon.io](https://cocoon.io)
- - Cordova HeyZap (wrapping your game with Cordova? Want HeyZap ads? Then this is your provider)
+
+If you're building an app you should use one of these:
+ - [Cocoon.io ads](https://cocoon.io)
+ - Cordova HeyZap
+ - Cordova Ironsource
+
 ### Gamedistribution.com
 If you already have an account on Gamedistribution.com you can skip this introduction if not, head on over to [gamedistribution.com](https://gamedistribution.com) and sign up for a free account.
 Once you're signed up you can check out [this guide](https://gamedistribution.com/sdk) for settings up a game. This is important because this will supply you with a gameId, which you need to supply to the plugin.
@@ -48,7 +54,6 @@ So when you have your gameId you can start by registering the provider to the pl
 ```javascript
 // Let's create a new provider, first argument should be the game, second should be the ad tag URL
 var provider = new h5ads.GameDistributionAds(
-   game,                                        // Your Phaser game instance
    '2d77cfd4b1e5487d998465c29de195b3'           // Your gameId
 );
 h5ads.adWrapper.setAdProvider(provider);
@@ -57,16 +62,23 @@ After this it's as easy as calling:
 ```javascript
 h5ads.adWrapper.showAd();
 ```
+
 ### IMA SDK
 A provider can use any number of arguments configured in order to make it work, it all depends on the implementation that was made by the developer. For our IMA Provider you can create one like this:
 ```javascript
 // Let's create a new provider, first argument should be the game, second should be the ad tag URL
 var provider = new h5ads.Ima3(
-   game,
    'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&correlator'
 );
 h5ads.adWrapper.setAdProvider(provider);
 ```
+
+### Cordova Ironsource
+The ironsource ads need to be preloaded before showing the ad. The preload process might take up to two second, so its best to always have an ad preloaded after boot.
+```javascript
+h5ads.adWrapper.preloadAd(h5ads.AdType.interstitial);
+```
+
 Now all you need to do is request an ad, and add an event listener that is called when the ad is completed/skipped/finished/done playing.
 ```javascript
 h5ads.adWrapper.once('onContentResumed', function() {
@@ -77,6 +89,7 @@ h5ads.adWrapper.once('onContentResumed', function() {
 h5ads.adWrapper.showAd();
 ```
 You can also send custom parameters by adding them as an object to the showAd function.
+
 F.A.Q.
 ------
 ### I Don't see any ads!
