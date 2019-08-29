@@ -5,6 +5,10 @@ import { AdType, AdEvents, H5AdWrapper } from '../h5-ad-wrapper'
 
 /**
  * The cordova Ironsource ad provider requires the cordova-plugin-ironsource-ads plugin to be setup within your cordova app.
+ *
+ * TODO:
+ * - Implement rewarded ads
+ * - Look at better ironsource plugin
  */
 export class CordovaIronSource implements IProvider {
     public adManager!: H5AdWrapper
@@ -46,10 +50,10 @@ export class CordovaIronSource implements IProvider {
                 this.adManager.emit(AdEvents.CONTENT_PAUSED)
                 IronSourceAds.showInterstitial()
                 break
-            case AdType.rewarded:
-                this.adManager.emit(AdEvents.CONTENT_PAUSED)
-                IronSourceAds.showRewardedVideo()
-                break
+            // case AdType.rewarded:
+            //     this.adManager.emit(AdEvents.CONTENT_PAUSED)
+            //     IronSourceAds.showRewardedVideo()
+            //     break
             default:
                 this.resumeGameplay()
                 break
@@ -78,8 +82,6 @@ export class CordovaIronSource implements IProvider {
         switch (adType) {
             case AdType.interstitial:
                 return this.interstitialLoaded
-            case AdType.rewarded:
-                return true
         }
         return false
     }

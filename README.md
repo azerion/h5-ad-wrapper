@@ -78,6 +78,7 @@ The ironsource ads need to be preloaded before showing the ad. The preload proce
 ```javascript
 h5ads.adWrapper.preloadAd(h5ads.AdType.interstitial);
 ```
+Please note that only intersticial ads are currently implemented for ironsource.
 
 Now all you need to do is request an ad, and add an event listener that is called when the ad is completed/skipped/finished/done playing.
 ```javascript
