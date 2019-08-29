@@ -75,6 +75,12 @@ export class CordovaIronSource implements IProvider {
     }
 
     public adAvailable(adType: AdType): boolean {
-        return true
+        switch (adType) {
+            case AdType.interstitial:
+                return this.interstitialLoaded
+            case AdType.rewarded:
+                return true
+        }
+        return false
     }
 }
