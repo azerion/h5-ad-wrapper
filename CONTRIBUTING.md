@@ -51,5 +51,5 @@ That is fine too. While Pull Requests are the best thing in the world for us, th
 
 - Follow conventions already in the code, and listen to tslint. Our config is set-up for a reason.
 
-[0]: https://github.com/orange-games/h5-ad-wrapper/issues
+[0]: https://github.com/azerion/h5-ad-wrapper/issues
 [3]: http://nodejs.org

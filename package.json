@@ -1,12 +1,12 @@
 {
     "name": "@azerion/h5-ad-wrapper",
-    "author": "OrangeGames",
+    "author": "Azerion",
     "version": "0.2.3",
     "description": "Advertisement provider wrapper, similar to @azerion/phaser-ads but not tied into Phaser :)",
     "contributors": [
         {
             "name": "Ale Bles",
-            "email": "a.bles@orangegames.com"
+            "email": "a.bles@azerion.com"
         }
     ],
     "main": "dist/h5-ad-wrapper.umd.js",
