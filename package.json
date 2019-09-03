@@ -7,6 +7,14 @@
         {
             "name": "Ale Bles",
             "email": "a.bles@azerion.com"
+        },
+        {
+            "name": "Amy Goemans",
+            "email": "a.goemans@azerion.com"
+        },
+        {
+            "name": "Floris de Haan",
+            "email": "f.dehaan@azerion.com"
         }
     ],
     "main": "dist/h5-ad-wrapper.umd.js",
