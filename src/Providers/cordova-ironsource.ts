@@ -7,7 +7,6 @@ import { AdType, AdEvents, H5AdWrapper } from '../h5-ad-wrapper'
  * The cordova Ironsource ad provider requires the cordova-plugin-ironsource-ads plugin to be setup within your cordova app.
  *
  * TODO:
- * - Implement rewarded ads
  * - Look at better ironsource plugin
  */
 export class CordovaIronSource implements IProvider {
@@ -15,6 +14,7 @@ export class CordovaIronSource implements IProvider {
     public adsEnabled: boolean = false
 
     private interstitialLoaded: boolean = false
+    private rewardedLoaded: boolean = false
 
     constructor(appKey: string) {
         if (typeof IronSourceAds === 'undefined') {
@@ -24,15 +24,23 @@ export class CordovaIronSource implements IProvider {
         IronSourceAds.init({
             appKey: appKey
         })
+
+        // Listen for interstitial
         window.addEventListener('interstitialClosed', () => {
             this.resumeGameplay()
         })
-        window.addEventListener('interstitialLoaded', () => {
-            this.interstitialLoaded = true
-        })
+        window.addEventListener('interstitialLoaded', () => this.interstitialChanged(true))
+
+        // Listen for rewarded
         window.addEventListener('rewardedVideoClosed', () => {
             this.resumeGameplay()
         })
+        IronSourceAds.hasRewardedVideo({
+            onSuccess: this.rewardedChanged.bind(this)
+        })
+        window.addEventListener('rewardedVideoAvailabilityChanged', (event: any) =>
+            this.rewardedChanged(event.available)
+        )
     }
 
     public setManager(manager: H5AdWrapper): void {
@@ -46,14 +54,18 @@ export class CordovaIronSource implements IProvider {
                     this.resumeGameplay()
                     break
                 }
-                this.interstitialLoaded = false
+                this.interstitialChanged(false)
                 this.adManager.emit(AdEvents.CONTENT_PAUSED)
                 IronSourceAds.showInterstitial()
                 break
-            // case AdType.rewarded:
-            //     this.adManager.emit(AdEvents.CONTENT_PAUSED)
-            //     IronSourceAds.showRewardedVideo()
-            //     break
+            case AdType.rewarded:
+                if (!this.rewardedLoaded) {
+                    this.resumeGameplay()
+                    break
+                }
+                this.adManager.emit(AdEvents.CONTENT_PAUSED)
+                IronSourceAds.showRewardedVideo()
+                break
             default:
                 this.resumeGameplay()
                 break
@@ -82,7 +94,17 @@ export class CordovaIronSource implements IProvider {
         switch (adType) {
             case AdType.interstitial:
                 return this.interstitialLoaded
+            case AdType.rewarded:
+                return this.rewardedLoaded
         }
         return false
+    }
+
+    private interstitialChanged(available: boolean): void {
+        this.interstitialLoaded = available
+    }
+
+    private rewardedChanged(available: boolean): void {
+        this.rewardedLoaded = available
     }
 }

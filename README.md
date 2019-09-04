@@ -74,11 +74,11 @@ h5ads.adWrapper.setAdProvider(provider);
 ```
 
 ### Cordova Ironsource
-The ironsource ads need to be preloaded before showing the ad. The preload process might take up to two second, so its best to always have an ad preloaded after boot.
+The ironsource interstitial ads need to be preloaded before showing. The preload process might take up to two second, so its best to always have an ad preloaded after boot.
 ```javascript
 h5ads.adWrapper.preloadAd(h5ads.AdType.interstitial);
 ```
-Please note that only intersticial ads are currently implemented for ironsource.
+Please note that only intersticial and rewarded ads are currently implemented for ironsource.
 
 Now all you need to do is request an ad, and add an event listener that is called when the ad is completed/skipped/finished/done playing.
 ```javascript
