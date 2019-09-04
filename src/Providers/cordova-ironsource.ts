@@ -29,7 +29,7 @@ export class CordovaIronSource implements IProvider {
         window.addEventListener('interstitialClosed', () => {
             this.resumeGameplay()
         })
-        window.addEventListener('interstitialLoaded', () => this.intersticialChanged(true))
+        window.addEventListener('interstitialLoaded', () => this.interstitialChanged(true))
 
         // Listen for rewarded
         window.addEventListener('rewardedVideoClosed', () => {
@@ -54,7 +54,7 @@ export class CordovaIronSource implements IProvider {
                     this.resumeGameplay()
                     break
                 }
-                this.intersticialChanged(false)
+                this.interstitialChanged(false)
                 this.adManager.emit(AdEvents.CONTENT_PAUSED)
                 IronSourceAds.showInterstitial()
                 break
@@ -94,11 +94,13 @@ export class CordovaIronSource implements IProvider {
         switch (adType) {
             case AdType.interstitial:
                 return this.interstitialLoaded
+            case AdType.rewarded:
+                return this.rewardedLoaded
         }
         return false
     }
 
-    private intersticialChanged(available: boolean): void {
+    private interstitialChanged(available: boolean): void {
         this.interstitialLoaded = available
     }
 
