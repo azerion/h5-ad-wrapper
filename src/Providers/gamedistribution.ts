@@ -17,7 +17,6 @@ export class GameDistribution implements IProvider {
 
     constructor(gameId: string) {
         this.areAdsEnabled()
-
         ;(window as any).GD_OPTIONS = {
             gameId: gameId,
             advertisementSettings: {
@@ -39,7 +38,7 @@ export class GameDistribution implements IProvider {
             }
             js = <HTMLScriptElement>d.createElement(s)
             js.id = id
-            js.src = '//html5.api.gamedistribution.com/test/main.js'
+            js.src = '//html5.api.gamedistribution.com/main.min.js'
             if (fjs.parentNode) {
                 fjs.parentNode.insertBefore(js, fjs)
             }
