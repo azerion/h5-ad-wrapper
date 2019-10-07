@@ -106,7 +106,7 @@ export class GameDistribution implements IProvider {
 
     //Does nothing, but needed for Provider interface
     public preloadAd(adType: AdType): void {
-        if (this.hasRewarded || !this.adsEnabled) {
+        if (this.hasRewarded || !this.adsEnabled || adType !== AdType.rewarded) {
             return
         }
         console.log('preloading ad')

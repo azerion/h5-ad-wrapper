@@ -25,16 +25,16 @@ export class CordovaIronSource implements IProvider {
             appKey: appKey
         })
 
+        const resume: () => void = () => this.resumeGameplay()
+
         // Listen for interstitial
-        window.addEventListener('interstitialClosed', () => {
-            this.resumeGameplay()
-        })
+        window.addEventListener('interstitialClosed', resume)
+        window.addEventListener('interstitialShowFailed', resume)
         window.addEventListener('interstitialLoaded', () => this.interstitialChanged(true))
 
         // Listen for rewarded
-        window.addEventListener('rewardedVideoClosed', () => {
-            this.resumeGameplay()
-        })
+        window.addEventListener('rewardedVideoClosed', resume)
+        window.addEventListener('rewardedVideoFailed', resume)
         IronSourceAds.hasRewardedVideo({
             onSuccess: this.rewardedChanged.bind(this)
         })
