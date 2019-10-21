@@ -23,8 +23,16 @@ export class GameDistribution implements IProvider {
                 autoplay: false
             },
             onEvent: (event: any) => {
-                if (event.name === 'SDK_READY') {
-                    this.sdkLoaded()
+                switch (event.name as string) {
+                    case 'SDK_GAME_PAUSE':
+                        // pause game logic / mute audio
+                        this.adManager.emit(AdEvents.CONTENT_PAUSED)
+                        break
+                    case 'SDK_READY':
+                        this.sdkLoaded()
+                        break
+                    default:
+                        break
                 }
             }
         } as IGameDistributionSettings
@@ -78,7 +86,6 @@ export class GameDistribution implements IProvider {
                 return
             }
 
-            this.adManager.emit(AdEvents.CONTENT_PAUSED)
             gdsdk
                 .showAd(
                     adType === AdType.rewarded
