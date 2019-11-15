@@ -4,7 +4,12 @@ export { CocoonAds } from './Providers/cocoon'
 export { CordovaGamedistribution } from './Providers/cordova-gamedistribution'
 export { CordovaHeyzap } from './Providers/cordova-heyzap'
 export { CordovaIronSource } from './Providers/cordova-ironsource'
-export { GameDistribution, GameDistributionBannerSize } from './Providers/gamedistribution'
+export {
+    GameDistribution,
+    GameDistributionBannerSize,
+    GameDistributionAlignment,
+    GameDistributionBanner
+} from './Providers/gamedistribution'
 export { Ima3 } from './Providers/ima3'
 export { IProvider } from './Providers/ad-provider'
 
