@@ -4,7 +4,7 @@ export { CocoonAds } from './Providers/cocoon'
 export { CordovaGamedistribution } from './Providers/cordova-gamedistribution'
 export { CordovaHeyzap } from './Providers/cordova-heyzap'
 export { CordovaIronSource } from './Providers/cordova-ironsource'
-export { GameDistribution } from './Providers/gamedistribution'
+export { GameDistribution, GameDistributionBannerSize } from './Providers/gamedistribution'
 export { Ima3 } from './Providers/ima3'
 export { IProvider } from './Providers/ad-provider'
 
@@ -56,6 +56,10 @@ export class H5AdWrapper extends EventEmitter {
 
         args.unshift(adType)
         this.provider.showAd.apply(this.provider, args)
+    }
+
+    public loadBanner(...args: any[]): any {
+        return this.provider.loadBanner.apply(this.provider, args)
     }
 
     /**

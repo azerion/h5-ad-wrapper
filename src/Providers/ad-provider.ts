@@ -10,6 +10,7 @@ export interface IProvider {
     hideAd(adType: AdType, ...args: any[]): void
     showAd(adType: AdType, ...args: any[]): void
     adAvailable(adType: AdType, ...args: any[]): boolean
+    loadBanner?(...args: any[]): any
     /*setLayout(...args: any[]): void;
      setPosition(...args: any[]): void;*/
 }
