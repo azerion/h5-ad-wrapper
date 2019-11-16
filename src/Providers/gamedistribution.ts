@@ -18,8 +18,34 @@ export enum GameDistributionBannerSize {
     WideSkyscraper // 160x600
 }
 
+export enum GameDistributionAlignment {
+    TopLeft,
+    TopCenter,
+    TopRight,
+    CenterLeft,
+    Center,
+    CenterRight,
+    BottomLeft,
+    BottomCenter,
+    BottomRight
+}
+
 export class GameDistributionBanner {
     public element: HTMLElement
+
+    private resizeListener!: () => void
+
+    private parent!: HTMLElement
+
+    private alignment!: GameDistributionAlignment
+
+    private width!: number
+
+    private height!: number
+
+    private offsetX: number = 0
+
+    private offsetY: number = 0
 
     constructor() {
         this.element = document.createElement('div')
@@ -38,6 +64,87 @@ export class GameDistributionBanner {
 
     public destroy(): void {
         document.body.removeChild(this.element)
+        delete this.element
+        delete this.parent
+        delete this.alignment
+
+        if (this.resizeListener) {
+            window.removeEventListener('resize', this.resizeListener)
+        }
+    }
+
+    public alignIn(element: HTMLElement, position: GameDistributionAlignment): void {
+        this.parent = element
+        this.alignment = position
+
+        this.resizeListener = () => this.resize()
+
+        window.addEventListener('resize', this.resizeListener)
+        this.resize()
+    }
+
+    public setOffset(x: number = 0, y: number = 0): void {
+        this.offsetX = x
+        this.offsetY = y
+        this.resize()
+    }
+
+    private resize(): void {
+        const parentBoundingRect: ClientRect = this.parent.getBoundingClientRect()
+
+        switch (this.alignment) {
+            case GameDistributionAlignment.TopLeft:
+                this.position(parentBoundingRect.left, parentBoundingRect.top)
+                break
+            case GameDistributionAlignment.TopCenter:
+                this.position(
+                    parentBoundingRect.left + parentBoundingRect.width / 2 - this.width / 2,
+                    parentBoundingRect.top
+                )
+                break
+            case GameDistributionAlignment.TopRight:
+                this.position(
+                    parentBoundingRect.left + parentBoundingRect.width - this.width,
+                    parentBoundingRect.top
+                )
+                break
+            case GameDistributionAlignment.CenterLeft:
+                this.position(
+                    parentBoundingRect.left,
+                    parentBoundingRect.top + parentBoundingRect.height / 2 - this.height / 2
+                )
+                break
+            case GameDistributionAlignment.Center:
+                this.position(
+                    parentBoundingRect.left + parentBoundingRect.width / 2 - this.width / 2,
+                    parentBoundingRect.top + parentBoundingRect.height / 2 - this.height / 2
+                )
+                break
+            case GameDistributionAlignment.CenterRight:
+                this.position(
+                    parentBoundingRect.left + parentBoundingRect.width - this.width,
+                    parentBoundingRect.top + parentBoundingRect.height / 2 - this.height / 2
+                )
+                break
+            case GameDistributionAlignment.BottomLeft:
+                this.position(
+                    parentBoundingRect.left,
+                    parentBoundingRect.top + parentBoundingRect.height - this.height
+                )
+                break
+            case GameDistributionAlignment.BottomCenter:
+                this.position(
+                    parentBoundingRect.left + parentBoundingRect.width / 2 - this.width / 2,
+                    parentBoundingRect.top + parentBoundingRect.height - this.height
+                )
+                break
+            case GameDistributionAlignment.BottomRight:
+                this.position(
+                    parentBoundingRect.left + parentBoundingRect.width - this.width,
+                    parentBoundingRect.top + parentBoundingRect.height - this.height
+                )
+                break
+        }
     }
 
     public setSize(size: GameDistributionBannerSize): void {
@@ -70,13 +177,17 @@ export class GameDistributionBanner {
                 height = 600
                 break
         }
+
+        this.width = width
+        this.height = height
+
         this.element.style.width = `${width}px`
         this.element.style.height = `${height}px`
     }
 
     public position(x: number, y: number): void {
-        this.element.style.left = `${x}px`
-        this.element.style.top = `${y}px`
+        this.element.style.left = `${x + this.offsetX}px`
+        this.element.style.top = `${y + this.offsetY}px`
     }
 }
 
