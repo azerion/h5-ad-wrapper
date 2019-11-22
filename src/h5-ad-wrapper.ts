@@ -63,6 +63,10 @@ export class H5AdWrapper extends EventEmitter {
         this.provider.showAd.apply(this.provider, args)
     }
 
+    public createBanner(...args: any[]): any {
+        return this.provider.loadBanner.apply(this.provider, args)
+    }
+
     public loadBanner(...args: any[]): any {
         return this.provider.loadBanner.apply(this.provider, args)
     }
