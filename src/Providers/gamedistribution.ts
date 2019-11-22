@@ -56,7 +56,7 @@ export class GameDistributionBanner {
         document.body.appendChild(this.element)
     }
 
-    public loadBanner(): void {
+    public loadBanner(): Promise<any> {
         return gdsdk.showAd(GameDistributionAdType.display, {
             containerId: this.element.id
         })
@@ -292,6 +292,12 @@ export class GameDistribution implements IProvider {
                     this.adManager.emit(AdEvents.CONTENT_RESUMED)
                 })
         }
+    }
+
+    public createBanner(size: GameDistributionBannerSize): GameDistributionBanner {
+        const banner: GameDistributionBanner = new GameDistributionBanner()
+        banner.setSize(size)
+        return banner
     }
 
     public loadBanner(size: GameDistributionBannerSize): GameDistributionBanner {
