@@ -57,6 +57,10 @@ export class GameDistributionBanner {
     }
 
     public loadBanner(): Promise<any> {
+        if (typeof gdsdk === 'undefined') {
+            return Promise.reject('GD Sdk not available, probably due to adblocker')
+        }
+
         return gdsdk.showAd(GameDistributionAdType.display, {
             containerId: this.element.id
         })
@@ -294,13 +298,21 @@ export class GameDistribution implements IProvider {
         }
     }
 
-    public createBanner(size: GameDistributionBannerSize): GameDistributionBanner {
+    public createBanner(size: GameDistributionBannerSize): GameDistributionBanner | undefined {
+        if (!this.adsEnabled) {
+            return
+        }
+
         const banner: GameDistributionBanner = new GameDistributionBanner()
         banner.setSize(size)
         return banner
     }
 
-    public loadBanner(size: GameDistributionBannerSize): GameDistributionBanner {
+    public loadBanner(size: GameDistributionBannerSize): GameDistributionBanner | undefined {
+        if (!this.adsEnabled) {
+            return
+        }
+
         const banner: GameDistributionBanner = new GameDistributionBanner()
         banner.setSize(size)
         banner.loadBanner()
