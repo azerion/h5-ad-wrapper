@@ -199,7 +199,6 @@ export class GameDistribution implements IProvider {
     public adManager!: H5AdWrapper
 
     public adsEnabled: boolean = false
-    public hasRewarded: boolean = false
     public adShowing: boolean = false
 
     constructor(gameId: string) {
@@ -267,12 +266,6 @@ export class GameDistribution implements IProvider {
                 return
             }
 
-            if (adType === AdType.rewarded && !this.hasRewarded) {
-                this.adManager.emit(AdEvents.CONTENT_RESUMED)
-
-                return
-            }
-
             gdsdk
                 .showAd(
                     adType === AdType.rewarded
@@ -280,19 +273,9 @@ export class GameDistribution implements IProvider {
                         : GameDistributionAdType.interstitial
                 )
                 .then(() => {
-                    if (adType === AdType.rewarded && this.hasRewarded) {
-                        this.adManager.emit(AdEvents.AD_REWARDED)
-
-                        this.hasRewarded = false
-                    }
-
                     this.adManager.emit(AdEvents.CONTENT_RESUMED)
                 })
                 .catch(() => {
-                    if (adType === AdType.rewarded && this.hasRewarded) {
-                        this.hasRewarded = false
-                    }
-
                     this.adManager.emit(AdEvents.CONTENT_RESUMED)
                 })
         }
@@ -321,21 +304,10 @@ export class GameDistribution implements IProvider {
 
     //Does nothing, but needed for Provider interface
     public preloadAd(adType: AdType): void {
-        if (this.hasRewarded || !this.adsEnabled || adType !== AdType.rewarded) {
-            return
-        }
-        console.log('preloading ad')
-        gdsdk.preloadAd(GameDistributionAdType.rewarded).then(() => {
-            this.hasRewarded = true
-            this.adManager.emit(AdEvents.AD_LOADED, adType)
-        })
+        return
     }
 
     public adAvailable(adType: AdType): boolean {
-        if (adType === AdType.rewarded) {
-            return this.hasRewarded
-        }
-
         return true
     }
 
