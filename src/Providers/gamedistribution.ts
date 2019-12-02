@@ -273,6 +273,10 @@ export class GameDistribution implements IProvider {
                         : GameDistributionAdType.interstitial
                 )
                 .then(() => {
+                    if (adType === AdType.rewarded) {
+                        this.adManager.emit(AdEvents.AD_REWARDED)
+                    }
+
                     this.adManager.emit(AdEvents.CONTENT_RESUMED)
                 })
                 .catch(() => {
