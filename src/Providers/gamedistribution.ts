@@ -267,12 +267,6 @@ export class GameDistribution implements IProvider {
                 return
             }
 
-            if (adType === AdType.rewarded && !this.hasRewarded) {
-                this.adManager.emit(AdEvents.CONTENT_RESUMED)
-
-                return
-            }
-
             gdsdk
                 .showAd(
                     adType === AdType.rewarded
@@ -280,9 +274,8 @@ export class GameDistribution implements IProvider {
                         : GameDistributionAdType.interstitial
                 )
                 .then(() => {
-                    if (adType === AdType.rewarded && this.hasRewarded) {
+                    if (adType === AdType.rewarded) {
                         this.adManager.emit(AdEvents.AD_REWARDED)
-
                         this.hasRewarded = false
                     }
 
