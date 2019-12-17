@@ -78,6 +78,11 @@ export class GameDistributionBanner {
     }
 
     public alignIn(element: HTMLElement, position: GameDistributionAlignment): void {
+        if (this.parent) {
+            console.warn('Banner already aligned, ignoring...')
+            return
+        }
+
         this.parent = element
         this.alignment = position
 
