@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.4.5] - 2019-12-17
 ## Fixed
 - Disallowed double calling of alignIn for GD banner
+- Check for parent div on banner resize
 
 
 ## [0.4.4] - 2019-12-02

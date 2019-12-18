@@ -68,13 +68,14 @@ export class GameDistributionBanner {
 
     public destroy(): void {
         document.body.removeChild(this.element)
-        delete this.element
-        delete this.parent
-        delete this.alignment
 
         if (this.resizeListener) {
             window.removeEventListener('resize', this.resizeListener)
         }
+
+        delete this.element
+        delete this.parent
+        delete this.alignment
     }
 
     public alignIn(element: HTMLElement, position: GameDistributionAlignment): void {
@@ -99,6 +100,10 @@ export class GameDistributionBanner {
     }
 
     private resize(): void {
+        if (!this.parent) {
+            return
+        }
+
         const parentBoundingRect: ClientRect = this.parent.getBoundingClientRect()
 
         switch (this.alignment) {
