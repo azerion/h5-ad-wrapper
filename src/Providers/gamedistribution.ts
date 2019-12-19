@@ -110,11 +110,9 @@ export class GameDistributionBanner {
 
         switch (this.alignment) {
             case GameDistributionAlignment.TopLeft:
-                this.element.style.transformOrigin = 'left top'
                 this.position(parentBoundingRect.left, parentBoundingRect.top)
                 break
             case GameDistributionAlignment.TopCenter:
-                this.element.style.transformOrigin = 'center top'
                 this.position(
                     parentBoundingRect.left +
                         parentBoundingRect.width / 2 -
@@ -123,7 +121,6 @@ export class GameDistributionBanner {
                 )
                 break
             case GameDistributionAlignment.TopRight:
-                this.element.style.transformOrigin = 'right top'
                 this.position(
                     parentBoundingRect.left +
                         parentBoundingRect.width -
@@ -132,7 +129,6 @@ export class GameDistributionBanner {
                 )
                 break
             case GameDistributionAlignment.CenterLeft:
-                this.element.style.transformOrigin = 'left center'
                 this.position(
                     parentBoundingRect.left,
                     parentBoundingRect.top +
@@ -141,7 +137,6 @@ export class GameDistributionBanner {
                 )
                 break
             case GameDistributionAlignment.Center:
-                this.element.style.transformOrigin = 'center center'
                 this.position(
                     parentBoundingRect.left +
                         parentBoundingRect.width / 2 -
@@ -152,7 +147,6 @@ export class GameDistributionBanner {
                 )
                 break
             case GameDistributionAlignment.CenterRight:
-                this.element.style.transformOrigin = 'right center'
                 this.position(
                     parentBoundingRect.left +
                         parentBoundingRect.width -
@@ -163,7 +157,6 @@ export class GameDistributionBanner {
                 )
                 break
             case GameDistributionAlignment.BottomLeft:
-                this.element.style.transformOrigin = 'left bottom'
                 this.position(
                     parentBoundingRect.left,
                     parentBoundingRect.top +
@@ -172,7 +165,6 @@ export class GameDistributionBanner {
                 )
                 break
             case GameDistributionAlignment.BottomCenter:
-                this.element.style.transformOrigin = 'center bottom'
                 this.position(
                     parentBoundingRect.left +
                         parentBoundingRect.width / 2 -
@@ -183,7 +175,6 @@ export class GameDistributionBanner {
                 )
                 break
             case GameDistributionAlignment.BottomRight:
-                this.element.style.transformOrigin = 'right bottom'
                 this.position(
                     parentBoundingRect.left +
                         parentBoundingRect.width -
@@ -240,6 +231,7 @@ export class GameDistributionBanner {
     }
 
     public scale(factor: number): void {
+        this.element.style.transformOrigin = 'left top'
         this.scaleFactor = factor
         this.element.style.transform = `scale(${factor})`
     }
