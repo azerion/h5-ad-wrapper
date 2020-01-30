@@ -1,7 +1,7 @@
 {
     "name": "@azerion/h5-ad-wrapper",
     "author": "Azerion",
-    "version": "0.5.1",
+    "version": "0.6.0",
     "description": "Advertisement provider wrapper, similar to @azerion/phaser-ads but not tied into Phaser :)",
     "contributors": [
         {
@@ -15,6 +15,10 @@
         {
             "name": "Floris de Haan",
             "email": "f.dehaan@azerion.com"
+        },
+        {
+            "name": "Bram Willem van der Kuip",
+            "email": "bw.vanderkuip@azerion.com"
         }
     ],
     "main": "dist/h5-ad-wrapper.umd.js",
