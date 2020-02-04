@@ -10,6 +10,8 @@ export class CordovaGamedock implements IProvider {
     public adManager!: H5AdWrapper
     public adsEnabled: boolean = false
 
+    public interstitialLoaded: boolean = false
+
     constructor() {
         if (typeof gamedockSDK === 'undefined') {
             return
@@ -29,9 +31,17 @@ export class CordovaGamedock implements IProvider {
             externalIds
         )
 
+        gamedockSDK.on('AdAvailable', (data: any) => {
+            if (data.type === 'interstitial') {
+                this.interstitialChanged(true)
+            }
+        })
+
         const resume: () => void = () => this.resumeGameplay()
         gamedockSDK.on('AdFinished', resume)
         gamedockSDK.on('AdNotAvailable', resume)
+
+        gamedockSDK.requestInterstitial()
     }
 
     public setManager(manager: H5AdWrapper): void {
@@ -45,8 +55,16 @@ export class CordovaGamedock implements IProvider {
 
         switch (adType) {
             case AdType.interstitial:
+                if (!this.interstitialLoaded) {
+                    this.resumeGameplay()
+                    break
+                }
+
                 this.adManager.emit(AdEvents.CONTENT_PAUSED)
                 gamedockSDK.playInterstitial()
+                this.interstitialChanged(false)
+
+                gamedockSDK.requestInterstitial()
                 break
             case AdType.rewarded:
                 if (!this.adAvailable(AdType.rewarded)) {
@@ -103,5 +121,9 @@ export class CordovaGamedock implements IProvider {
                 ? GamedockAdType.banner
                 : GamedockAdType.interstitial
         )
+    }
+
+    private interstitialChanged(available: boolean): void {
+        this.interstitialLoaded = available
     }
 }
