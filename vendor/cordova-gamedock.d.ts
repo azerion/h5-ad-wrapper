@@ -3,12 +3,6 @@ declare interface IAgeGateOptions {
     requiredAge: number;
 }
 
-declare enum GamedockAdType {
-    "banner",
-    "interstitial",
-    "rewardVideo"
-}
-
 declare interface IGamedockSDK  {
     on(event: string, callback: Function): void;
     initialise(withAgeGate: boolean, ageGateOptions: IAgeGateOptions, withPrivacyPolicy: boolean, environment: string, externalIds: any[]): void;
@@ -19,7 +13,7 @@ declare interface IGamedockSDK  {
     playInterstitial(): void;
     playRewardVideo(): void;
 
-    isAdAvailable(adType: GamedockAdType): boolean;
+    isAdAvailable(adType: string): boolean;
 }
 
 declare var gamedockSDK: IGamedockSDK | undefined;
