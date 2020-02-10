@@ -23,6 +23,12 @@ export class CordovaGamedock implements IProvider {
         let environment: string = 'PRODUCTION'
         let externalIds: any[] = []
 
+        gamedockSDK.on('PrivacyPolicyStatus', (data: any) => {
+            if (data.accepted) {
+                this.adManager.emit(AdEvents.AD_PROVIDER_LOADED)
+            }
+        })
+
         gamedockSDK.initialise(
             withAgeGate,
             ageGateOptions,
