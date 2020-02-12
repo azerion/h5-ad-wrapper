@@ -10,7 +10,7 @@ export class CordovaGamedock implements IProvider {
     public adManager!: H5AdWrapper
     public adsEnabled: boolean = false
 
-    private requestedInterstitial: boolean = false
+    private rewardedLoaded: boolean = false
 
     constructor() {
         if (typeof gamedockSDK === 'undefined') {
@@ -43,7 +43,8 @@ export class CordovaGamedock implements IProvider {
                     this.interstitalAvailable()
                     break
                 case 'rewardVideo':
-                    throw new Error('Not yet implemented.')
+                    this.rewardedChanged(true)
+                    break
                 case 'banner':
                     throw new Error('Not yet implemented.')
             }
@@ -52,17 +53,28 @@ export class CordovaGamedock implements IProvider {
         gamedockSDK.on('AdNotAvailable', (data: any) => {
             switch (data.type) {
                 case 'interstitial':
-                    this.interstitalNotAvailable()
+                    this.resumeGameplay()
                     break
                 case 'rewardVideo':
-                    throw new Error('Not yet implemented.')
+                    this.resumeGameplay()
+                    break
                 case 'banner':
                     throw new Error('Not yet implemented.')
             }
         })
 
-        const resume: () => void = () => this.resumeGameplay()
-        gamedockSDK.on('AdFinished', resume)
+        gamedockSDK.on('AdFinished', (data: any) => {
+            switch (data.type) {
+                case 'interstitial':
+                    this.resumeGameplay()
+                    break
+                case 'rewardVideo':
+                    this.rewardVideoFinished(data.reason)
+                    break
+                case 'banner':
+                    throw new Error('Not yet implemented.')
+            }
+        })
     }
 
     public setManager(manager: H5AdWrapper): void {
@@ -77,7 +89,6 @@ export class CordovaGamedock implements IProvider {
         switch (adType) {
             case AdType.interstitial:
                 this.adManager.emit(AdEvents.CONTENT_PAUSED)
-                this.requestedInterstitial = true
                 gamedockSDK.requestInterstitial()
                 break
             case AdType.rewarded:
@@ -86,6 +97,7 @@ export class CordovaGamedock implements IProvider {
                     break
                 }
                 this.adManager.emit(AdEvents.CONTENT_PAUSED)
+                this.rewardedChanged(false)
                 gamedockSDK.playRewardVideo()
                 break
             default:
@@ -99,14 +111,18 @@ export class CordovaGamedock implements IProvider {
             return
         }
 
-        if (this.requestedInterstitial) {
-            gamedockSDK.playInterstitial()
-            this.requestedInterstitial = false
-        }
+        gamedockSDK.playInterstitial()
     }
 
-    private interstitalNotAvailable(): void {
-        this.resumeGameplay()
+    private rewardVideoFinished(reason: string): void {
+        switch (reason) {
+            case 'dismiss':
+                this.resumeGameplay()
+                break
+            case 'close':
+                this.adManager.emit(AdEvents.AD_REWARDED)
+                break
+        }
     }
 
     private resumeGameplay(): void {
@@ -114,7 +130,18 @@ export class CordovaGamedock implements IProvider {
     }
 
     public preloadAd(adType: AdType = AdType.interstitial): void {
-        return
+        if (typeof gamedockSDK === 'undefined') {
+            return
+        }
+
+        switch (adType) {
+            case AdType.rewarded:
+                if (this.rewardedLoaded) {
+                    return
+                }
+                gamedockSDK.requestRewardVideo()
+                break
+        }
     }
 
     public destroyAd(): void {
@@ -126,18 +153,14 @@ export class CordovaGamedock implements IProvider {
     }
 
     public adAvailable(adType: AdType): boolean {
-        if (typeof gamedockSDK === 'undefined') {
-            return false
+        switch (adType) {
+            case AdType.rewarded:
+                return this.rewardedLoaded
         }
+        return false
+    }
 
-        return gamedockSDK.isAdAvailable(
-            adType === AdType.interstitial
-                ? 'interstitial'
-                : adType === AdType.rewarded
-                ? 'rewardVideo'
-                : adType === AdType.banner
-                ? 'banner'
-                : 'interstitial'
-        )
+    private rewardedChanged(available: boolean): void {
+        this.rewardedLoaded = available
     }
 }
