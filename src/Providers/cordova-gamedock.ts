@@ -21,6 +21,7 @@ export class CordovaGamedock implements IProvider {
      */
     constructor() {
         if (typeof gamedockSDK === 'undefined') {
+            this.adManager.emit(AdEvents.AD_PROVIDER_LOADED)
             return
         }
 
