@@ -31,12 +31,12 @@ export class CocoonAds implements IProvider {
 
     constructor(provider: CocoonProvider, config?: any) {
         // TODO: Add cordova check
-        if (Cocoon && Cocoon.Ad) {
-            this.adsEnabled = true
-        } else {
+        if (!Cocoon || !Cocoon.Ad) {
             this.adManager.emit(AdEvents.AD_PROVIDER_LOADED)
             return
         }
+
+        this.adsEnabled = true
 
         switch (provider) {
             default:
