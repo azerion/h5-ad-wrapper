@@ -10,25 +10,33 @@ export class CordovaGamedock implements IProvider {
     public adManager!: H5AdWrapper
     public adsEnabled: boolean = false
 
+    /**
+     * Flag for if an rewarded ad is loaded or not.
+     */
     private rewardedLoaded: boolean = false
 
+    /**
+     * Creates an instance of CordovaGamedock.
+     * Initializes the gamedockSDK and adds listeners for events.
+     */
     constructor() {
         if (typeof gamedockSDK === 'undefined') {
             return
         }
 
+        // Variables the gamedockSDK requires to be initialized.
         let withAgeGate: boolean = false
         let ageGateOptions: IAgeGateOptions = { shouldBlock: true, requiredAge: 12 }
         let withPrivacyPolicy: boolean = true
         let environment: string = 'PRODUCTION'
         let externalIds: any[] = []
 
+        // Calls AD_PROVIDER_LOADED on PrivacyPolicyStatus with flag accepted.
         gamedockSDK.on('PrivacyPolicyStatus', (data: any) => {
-            if (data.accepted) {
-                this.adManager.emit(AdEvents.AD_PROVIDER_LOADED)
-            }
+            this.adManager.emit(AdEvents.AD_PROVIDER_LOADED, data.accepted)
         })
 
+        // Initialize the gamedockSDK.
         gamedockSDK.initialise(
             withAgeGate,
             ageGateOptions,
@@ -37,6 +45,7 @@ export class CordovaGamedock implements IProvider {
             externalIds
         )
 
+        // Called whenever there is an ad available via the requestInterstitial and reqeuestRewardVideo methods.
         gamedockSDK.on('AdAvailable', (data: any) => {
             switch (data.type) {
                 case 'interstitial':
@@ -50,6 +59,7 @@ export class CordovaGamedock implements IProvider {
             }
         })
 
+        // Called whenever there is no ad available (for now just resumes gameplay).
         gamedockSDK.on('AdNotAvailable', (data: any) => {
             switch (data.type) {
                 case 'interstitial':
@@ -63,6 +73,7 @@ export class CordovaGamedock implements IProvider {
             }
         })
 
+        // Called whenever the shown ad is finished or closed for given reason.
         gamedockSDK.on('AdFinished', (data: any) => {
             switch (data.type) {
                 case 'interstitial':
@@ -81,6 +92,10 @@ export class CordovaGamedock implements IProvider {
         this.adManager = manager
     }
 
+    /**
+     * Show ad of type AdType
+     * @param {AdType} [adType=AdType.interstitial]
+     */
     public showAd(adType: AdType = AdType.interstitial): void {
         if (typeof gamedockSDK === 'undefined') {
             return
@@ -89,6 +104,8 @@ export class CordovaGamedock implements IProvider {
         switch (adType) {
             case AdType.interstitial:
                 this.adManager.emit(AdEvents.CONTENT_PAUSED)
+                // requestInterstitial is called because playInstestitial will not check ad timeout.
+                // playInstestitial will be called on AdAvailable.
                 gamedockSDK.requestInterstitial()
                 break
             case AdType.rewarded:
@@ -106,6 +123,9 @@ export class CordovaGamedock implements IProvider {
         }
     }
 
+    /**
+     * Called when the gamedockSDK event AdAvailable is called with typeof interstitial.
+     */
     private interstitalAvailable(): void {
         if (typeof gamedockSDK === 'undefined') {
             return
@@ -114,21 +134,35 @@ export class CordovaGamedock implements IProvider {
         gamedockSDK.playInterstitial()
     }
 
+    /**
+     * Called when the gamedockSDK event AdFinished is called with typeof rewardVideo.
+     * Will handle dismiss and close reason.
+     * @param {string} reason
+     */
     private rewardVideoFinished(reason: string): void {
         switch (reason) {
             case 'dismiss':
+                // If rewardVideo is dismissed (closed before finished), resume the gameplay.
                 this.resumeGameplay()
                 break
             case 'close':
+                // If rewardVideo is closed (player saw video until end), emit AD_REWARDED event.
                 this.adManager.emit(AdEvents.AD_REWARDED)
                 break
         }
     }
 
+    /**
+     * Emits event CONTENT_RESUMED
+     */
     private resumeGameplay(): void {
         this.adManager.emit(AdEvents.CONTENT_RESUMED)
     }
 
+    /**
+     * Preloads ad of type AdType
+     * @param {AdType} [adType=AdType.interstitial]
+     */
     public preloadAd(adType: AdType = AdType.interstitial): void {
         if (typeof gamedockSDK === 'undefined') {
             return
@@ -152,6 +186,11 @@ export class CordovaGamedock implements IProvider {
         return
     }
 
+    /**
+     * Returns if ad is available of type AdType
+     * @param {AdType} adType
+     * @returns {boolean}
+     */
     public adAvailable(adType: AdType): boolean {
         switch (adType) {
             case AdType.rewarded:
@@ -160,6 +199,10 @@ export class CordovaGamedock implements IProvider {
         return false
     }
 
+    /**
+     * Sets the rewardedLoaded flag to given boolean "available".
+     * @param {boolean} available
+     */
     private rewardedChanged(available: boolean): void {
         this.rewardedLoaded = available
     }
