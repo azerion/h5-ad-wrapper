@@ -2,6 +2,7 @@ import EventEmitter from 'eventemitter3'
 
 export { CocoonAds } from './Providers/cocoon'
 export { CordovaGamedistribution } from './Providers/cordova-gamedistribution'
+export { CordovaGamedock } from './Providers/cordova-gamedock'
 export { CordovaHeyzap } from './Providers/cordova-heyzap'
 export { CordovaIronSource } from './Providers/cordova-ironsource'
 export {
