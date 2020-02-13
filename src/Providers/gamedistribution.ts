@@ -292,7 +292,6 @@ export class GameDistribution implements IProvider {
         this.areAdsEnabled().then((enabled: boolean) => {
             if (enabled) {
                 this.adsEnabled = true
-                this.adManager.emit(AdEvents.AD_PROVIDER_LOADED)
             }
         })
     }
