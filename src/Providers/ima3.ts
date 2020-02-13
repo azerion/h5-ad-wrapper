@@ -42,6 +42,7 @@ export class Ima3 implements IProvider {
         this.areAdsEnabled()
 
         if (typeof google === 'undefined') {
+            this.adManager.emit(AdEvents.AD_PROVIDER_LOADED)
             return
         }
 
@@ -257,6 +258,8 @@ export class Ima3 implements IProvider {
             console.log('Adsmanager error:', adError)
             this.onAdError(adError)
         }
+
+        this.adManager.emit(AdEvents.AD_PROVIDER_LOADED)
     }
 
     /**

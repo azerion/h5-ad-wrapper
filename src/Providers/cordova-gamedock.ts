@@ -21,6 +21,7 @@ export class CordovaGamedock implements IProvider {
      */
     constructor() {
         if (typeof gamedockSDK === 'undefined') {
+            this.adManager.emit(AdEvents.AD_PROVIDER_LOADED)
             return
         }
 
@@ -33,7 +34,7 @@ export class CordovaGamedock implements IProvider {
 
         // Calls AD_PROVIDER_LOADED on PrivacyPolicyStatus with flag accepted.
         gamedockSDK.on('PrivacyPolicyStatus', (data: any) => {
-            this.adManager.emit(AdEvents.AD_PROVIDER_LOADED, data.accepted)
+            this.adManager.emit(AdEvents.AD_PROVIDER_LOADED)
         })
 
         // Initialize the gamedockSDK.

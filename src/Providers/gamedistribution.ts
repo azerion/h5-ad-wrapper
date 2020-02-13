@@ -280,6 +280,8 @@ export class GameDistribution implements IProvider {
                 fjs.parentNode.insertBefore(js, fjs)
             }
         })(document, 'script', 'gamedistribution-jssdk')
+
+        this.adManager.emit(AdEvents.AD_PROVIDER_LOADED)
     }
 
     public setManager(manager: H5AdWrapper): void {
@@ -290,7 +292,6 @@ export class GameDistribution implements IProvider {
         this.areAdsEnabled().then((enabled: boolean) => {
             if (enabled) {
                 this.adsEnabled = true
-                this.adManager.emit(AdEvents.AD_PROVIDER_LOADED)
             }
         })
     }
