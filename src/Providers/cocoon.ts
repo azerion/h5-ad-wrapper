@@ -34,6 +34,7 @@ export class CocoonAds implements IProvider {
         if (Cocoon && Cocoon.Ad) {
             this.adsEnabled = true
         } else {
+            this.adManager.emit(AdEvents.AD_PROVIDER_LOADED)
             return
         }
 
@@ -54,6 +55,7 @@ export class CocoonAds implements IProvider {
         }
 
         this.cocoonProvider.configure(config)
+        this.adManager.emit(AdEvents.AD_PROVIDER_LOADED)
     }
 
     public setManager(manager: H5AdWrapper): void {

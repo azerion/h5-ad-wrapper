@@ -14,6 +14,7 @@ export class CordovaGamedistribution implements IProvider {
             (cordova.plugins !== undefined && cordova.plugins.gdApi === undefined)
         ) {
             console.log('gdApi not available!')
+            this.adManager.emit(AdEvents.AD_PROVIDER_LOADED)
             return
         }
 
@@ -31,6 +32,8 @@ export class CordovaGamedistribution implements IProvider {
                 console.log('API init error!', error)
             }
         )
+
+        this.adManager.emit(AdEvents.AD_PROVIDER_LOADED)
     }
 
     private setAdListeners(): void {

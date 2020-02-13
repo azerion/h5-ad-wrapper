@@ -21,6 +21,8 @@ export class CordovaHeyzap implements IProvider {
                 this.adsEnabled = false
             }
         )
+
+        this.adManager.emit(AdEvents.AD_PROVIDER_LOADED)
     }
 
     public setManager(manager: H5AdWrapper): void {
