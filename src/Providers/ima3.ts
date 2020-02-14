@@ -42,7 +42,6 @@ export class Ima3 implements IProvider {
         this.areAdsEnabled()
 
         if (typeof google === 'undefined') {
-            this.adManager.emit(AdEvents.AD_PROVIDER_LOADED)
             return
         }
 
@@ -96,6 +95,7 @@ export class Ima3 implements IProvider {
 
     public setManager(manager: H5AdWrapper): void {
         this.adManager = manager
+        this.adManager.emit(AdEvents.AD_PROVIDER_LOADED)
     }
 
     /**
@@ -258,8 +258,6 @@ export class Ima3 implements IProvider {
             console.log('Adsmanager error:', adError)
             this.onAdError(adError)
         }
-
-        this.adManager.emit(AdEvents.AD_PROVIDER_LOADED)
     }
 
     /**

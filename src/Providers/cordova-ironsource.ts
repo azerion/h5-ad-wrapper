@@ -18,7 +18,6 @@ export class CordovaIronSource implements IProvider {
 
     constructor(appKey: string) {
         if (typeof IronSourceAds === 'undefined') {
-            this.adManager.emit(AdEvents.AD_PROVIDER_LOADED)
             return
         }
 
@@ -42,11 +41,11 @@ export class CordovaIronSource implements IProvider {
         window.addEventListener('rewardedVideoAvailabilityChanged', (event: any) =>
             this.rewardedChanged(event.available)
         )
-        this.adManager.emit(AdEvents.AD_PROVIDER_LOADED)
     }
 
     public setManager(manager: H5AdWrapper): void {
         this.adManager = manager
+        this.adManager.emit(AdEvents.AD_PROVIDER_LOADED)
     }
 
     public showAd(adType: AdType = AdType.interstitial): void {
