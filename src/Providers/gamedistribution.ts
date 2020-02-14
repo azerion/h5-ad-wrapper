@@ -280,12 +280,11 @@ export class GameDistribution implements IProvider {
                 fjs.parentNode.insertBefore(js, fjs)
             }
         })(document, 'script', 'gamedistribution-jssdk')
-
-        this.adManager.emit(AdEvents.AD_PROVIDER_LOADED)
     }
 
     public setManager(manager: H5AdWrapper): void {
         this.adManager = manager
+        this.adManager.emit(AdEvents.AD_PROVIDER_LOADED)
     }
 
     private sdkLoaded(): void {
