@@ -69,7 +69,10 @@ export class H5AdWrapper extends EventEmitter {
     }
 
     public loadBanner(...args: any[]): any {
-        return this.provider.loadBanner.apply(this.provider, args)
+        if (typeof this.provider.loadBanner === 'function') {
+            return this.provider.loadBanner.apply(this.provider, args)
+        }
+        return null
     }
 
     /**
