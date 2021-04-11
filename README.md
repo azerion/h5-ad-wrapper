@@ -53,7 +53,7 @@ Once you're signed up you can check out [this guide](https://gamedistribution.co
 So when you have your gameId you can start by registering the provider to the plugin:
 ```javascript
 // Let's create a new provider, first argument should be the game, second should be the ad tag URL
-var provider = new h5ads.GameDistributionAds(
+var provider = new h5ads.GameDistribution(
    '2d77cfd4b1e5487d998465c29de195b3'           // Your gameId
 );
 h5ads.adWrapper.setAdProvider(provider);
