@@ -1,7 +1,7 @@
 {
     "name": "@azerion/h5-ad-wrapper",
     "author": "Azerion",
-    "version": "0.7.0",
+    "version": "0.7.1",
     "description": "Advertisement provider wrapper, similar to @azerion/phaser-ads but not tied into Phaser :)",
     "contributors": [
         {
