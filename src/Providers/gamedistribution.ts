@@ -389,21 +389,34 @@ export class GameDistribution implements IProvider {
      * @returns {boolean}
      */
     private areAdsEnabled(): Promise<boolean> {
-        let test: HTMLElement = document.createElement('div')
-        test.innerHTML = '&nbsp;'
-        test.className = 'adsbox'
-        test.style.position = 'absolute'
-        test.style.fontSize = '10px'
+        let test: any = document.createElement('script')
+        test.id = 'debug-test-ad'
+        test.src = 'https://storage.googleapis.com/cdn.fbrq.io/anyad.js'
         document.body.appendChild(test)
 
         // let adsEnabled: boolean;
         let isEnabled: () => boolean = () => {
             let enabled: boolean = true
-            if (test.offsetHeight === 0) {
+            if (!document.getElementById('az-test-ad')) {
                 enabled = false
             }
-            if (test.parentNode) {
-                test.parentNode.removeChild(test)
+
+            if (document.getElementById('debug-test-ad')) {
+                let d: any = document.getElementById('debug-test-ad')
+                try {
+                    d.parentNode.removeChild(d)
+                } catch (e) {
+                    console.log('cannot remove div')
+                }
+            }
+
+            if (document.getElementById('az-test-ad')) {
+                let t: any = document.getElementById('az-test-ad')
+                try {
+                    t.parentNode.removeChild(t)
+                } catch (e) {
+                    console.log('cannot remove div')
+                }
             }
 
             return enabled
