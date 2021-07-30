@@ -245,7 +245,6 @@ export class GameDistribution implements IProvider {
     public adShowing: boolean = false
 
     constructor(gameId: string) {
-        this.areAdsEnabled()
         ;(window as any).GD_OPTIONS = {
             gameId: gameId,
             advertisementSettings: {
@@ -288,11 +287,7 @@ export class GameDistribution implements IProvider {
     }
 
     private sdkLoaded(): void {
-        this.areAdsEnabled().then((enabled: boolean) => {
-            if (enabled) {
-                this.adsEnabled = true
-            }
-        })
+        this.adsEnabled = true
     }
 
     public showAd(adType: AdType): void {
